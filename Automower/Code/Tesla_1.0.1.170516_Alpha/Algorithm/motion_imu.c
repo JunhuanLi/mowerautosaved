@@ -48,16 +48,21 @@ void Motion_Set_Path_Param(T_motion_tracker* obj,float advanc)
 	obj->path_imu.advancing = advanc;
 }
 
-void Motion_Set_Angle_Param(T_motion_tracker* obj,float kp, float ki, float il)
+void Motion_Set_cornerAngle_Param(T_motion_tracker* obj,float kp, float ki, float il)
 {
-	obj->path_imu.direction_pi.kp = kp;
-	obj->path_imu.direction_pi.ki = ki;
-	obj->path_imu.direction_pi.il = il;
+	obj->path_imu.cornerAngle_pi.kp = kp;
+	obj->path_imu.cornerAngle_pi.ki = ki;
+	obj->path_imu.cornerAngle_pi.il = il;
 	obj->path_imu.rotationFinished = FALSE;
 	obj->path_imu.preDirStored = FALSE;
 }
 
-
+void Motion_Set_lineAngle_Param(T_motion_tracker* obj,float kp, float ki, float il)
+{
+	obj->path_imu.lineAngle_pi.kp = kp;
+	obj->path_imu.lineAngle_pi.ki = ki;
+	obj->path_imu.lineAngle_pi.il = il;
+}
 
 void Motion_Update_2D_Angle(T_motion_tracker* obj,float dir_x,float dir_y,float vel)
 {
@@ -69,7 +74,7 @@ void Motion_Update_2D_Angle(T_motion_tracker* obj,float dir_x,float dir_y,float 
 	obj->path_imu.dir_y_adj									= dir_y;
 	obj->command_vel 												= vel;
 	obj->target_vel													= vel;
-	obj->path_imu.direction_pi.integral			= 0;
+//	obj->path_imu.direction_pi.integral			= 0;
 }
 
 void Motion_Update_2D_Line(T_motion_tracker* obj,float point_x, float point_y, float dir_x, float dir_y, float vel)
@@ -84,8 +89,8 @@ void Motion_Update_2D_Line(T_motion_tracker* obj,float point_x, float point_y, f
 	obj->path_imu.dir_y_adj									= dir_y;
 	obj->command_vel												= vel;
 	obj->target_vel 												= vel;//vel;bug 170914
-	obj->path_imu.position_pi.integral			= 0;
-	obj->path_imu.direction_pi.integral			= 0;
+	obj->path_imu.lineAngle_pi.integral			= 0;
+	obj->path_imu.lineAngle_pi.integral			= 0;
 }
 
 void Motion_Update_2D_Arc(T_motion_tracker* obj,float point_x, float point_y, float center_x, float center_y,float vel)
@@ -97,8 +102,8 @@ void Motion_Update_2D_Arc(T_motion_tracker* obj,float point_x, float point_y, fl
 	obj->path_imu.center_y	 								= center_y;
 	obj->command_vel												= vel;
 	obj->target_vel 												= vel;
-	obj->path_imu.position_pi.integral			= 0;
-	obj->path_imu.direction_pi.integral			= 0;
+//	obj->path_imu.position_pi.integral			= 0;
+//	obj->path_imu.direction_pi.integral			= 0;
 }
 
 void Motion_Update_2D_Point(T_motion_tracker* obj,float point_x, float point_y,float vel)
@@ -108,8 +113,8 @@ void Motion_Update_2D_Point(T_motion_tracker* obj,float point_x, float point_y,f
 	obj->path_imu.point_y 									= point_y;
 	obj->command_vel												= vel;
 	obj->target_vel													= vel;
-	obj->path_imu.position_pi.integral			= 0;
-	obj->path_imu.direction_pi.integral			= 0;
+//	obj->path_imu.position_pi.integral			= 0;
+//	obj->path_imu.direction_pi.integral			= 0;
 }
 
 
@@ -132,29 +137,29 @@ void Motion_Run_Tracker(T_motion_tracker* obj)
 }
 
 
-
+float											dp;
 static float Tracking_2D_Angle(T_motion_tracker* obj)
 {
 	T_motion_turn_type 									rot_dir;
 	float																err;
 	volatile float											cross_product;
-	volatile float											dot_product;
+
 	float																pi_out;
 	float																angular_vel;
 	
 	/************************The Angle Part*****************************/
 	cross_product = (obj->sense.dir_x*obj->path_imu.dir_y_adj)-(obj->path_imu.dir_x_adj*obj->sense.dir_y);
-	dot_product = (obj->sense.dir_x*obj->path_imu.dir_x_adj)+(obj->sense.dir_y*obj->path_imu.dir_y_adj);
+	dp = (obj->sense.dir_x*obj->path_imu.dir_x_adj)+(obj->sense.dir_y*obj->path_imu.dir_y_adj);
 	
 	/************ Anticlockwise positive; Clockwise negative ********************/
 	rot_dir = (cross_product < 0)?MOTION_TURN_CLOCKWISE:MOTION_TURN_COUNTERCLOCKWISE;
 	//err_angle = acosf(dot_product/sqrtf(obj->robot.dir_x*obj->robot.dir_x+obj->robot.dir_y*obj->robot.dir_y)/
 	//															sqrtf(obj->path_imu.dir_x*obj->path_imu.dir_x+obj->path_imu.dir_y*obj->path_imu.dir_y));
 
-	if(dot_product > 1.0f)		
-		dot_product = 1.0f;
+	if(dp > 1.0f)		
+		dp = 1.0f;
 
-	err = acosf(dot_product);  //acosf 0 ~ pi (?)
+	err = acosf(dp);  //acosf 0 ~ pi (?)
 	
 	
 	if(rot_dir == MOTION_TURN_COUNTERCLOCKWISE)
@@ -162,7 +167,7 @@ static float Tracking_2D_Angle(T_motion_tracker* obj)
 	
 	if(err != 0.0f)
 	{	
-		pi_out = PI_Run(&(obj->path_imu.direction_pi),0,err);
+		pi_out = PI_Run2(&(obj->path_imu.lineAngle_pi),err);
 	}
 	else
 	{
@@ -170,9 +175,7 @@ static float Tracking_2D_Angle(T_motion_tracker* obj)
 		pi_out = 0;
 	}
 	
-	angular_vel = pi_out;
-	
-	return angular_vel;
+	return pi_out;
 }
 
 static void Tracking_2D_Line(T_motion_tracker* obj)
@@ -209,10 +212,8 @@ void Motion_Run_2D_Angle(T_motion_tracker* obj)
 void Motion_Run_2D_Line(T_motion_tracker* obj)
 {
 	//Tracking_Get_Position_2D(obj);
-	Tracking_2D_Line(obj);
-	obj->angular_vel = Tracking_2D_Angle(obj);
-	
-	obj->angular_vel = 0;
+	//Tracking_2D_Line(obj);
+	//obj->angular_vel = Tracking_2D_Angle(obj);
 	obj->line_vel = obj->target_vel;
 }
 
@@ -255,12 +256,12 @@ void rotateAngle(T_motion_tracker* obj, float angle, T_motion_turn_type rot_dir)
 	if(fabsf(err)<=1) //in degree
 	{
 		obj->path_imu.preDirStored = FALSE;
-		obj->path_imu.direction_pi.integral = 0;
+		obj->path_imu.cornerAngle_pi.integral = 0;
 		obj->path_imu.rotationFinished = TRUE;
 	}
 	else
 	{
-		pi_out = PI_Run2(&(obj->path_imu.direction_pi),-err);
+		pi_out = PI_Run2(&(obj->path_imu.cornerAngle_pi),-err);
 		obj->line_vel = 0;
 		if(rot_dir == MOTION_TURN_CLOCKWISE)
 		{
@@ -274,3 +275,34 @@ void rotateAngle(T_motion_tracker* obj, float angle, T_motion_turn_type rot_dir)
 	}
 }
 
+void trackPoint(T_motion_tracker* obj, float target_x, float target_y)
+{
+	//走直线测试程序相关参数
+	float vec_x = 0.0;
+	float vec_y = 0.0;
+	float dp1 = 0.0;
+	float cp = 0.0;
+	float error = 0.0;
+	T_motion_turn_type 	rot_dir;
+
+	vec_x = target_x- obj->sense.pos_x;
+	vec_y = target_y - obj->sense.pos_y;
+	Motion_Norm_2D(&vec_x,&vec_y);
+	
+	dp1 = vec_x*obj->sense.dir_x + vec_y*obj->sense.dir_y;
+	cp = vec_x*obj->sense.dir_y - vec_y*obj->sense.dir_x;
+	
+	if(dp1 > 1.0f)		
+		dp1 = 1.0f;
+
+	error = acosf(dp1)*57.4;
+	rot_dir = (cp<0)?MOTION_TURN_CLOCKWISE:MOTION_TURN_COUNTERCLOCKWISE;
+	
+	if(rot_dir == MOTION_TURN_COUNTERCLOCKWISE)
+		error = -error;
+	if(error != 0.0f)
+	{		
+		obj->angular_vel = PI_Run2(&(obj->path_imu.lineAngle_pi),-error);
+		obj->line_vel = 0.1;
+	}
+}

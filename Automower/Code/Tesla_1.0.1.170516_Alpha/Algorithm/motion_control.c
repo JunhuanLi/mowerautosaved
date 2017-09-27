@@ -251,7 +251,8 @@ void Motion_Init(T_motion* motion,uint8_t en)
 	//obj->sensor.mag_polarity = 1;
 	
 	Motion_Set_Path_Param(&motion->tracker,0.4);
-	Motion_Set_Angle_Param(&motion->tracker,0.015,0.001f,0.1);
+	Motion_Set_cornerAngle_Param(&motion->tracker,0.015,0.001f,0.1);
+	Motion_Set_lineAngle_Param(&motion->tracker,0.015, 0.001f,0.1);
 	Motion_Set_Mag_Tracking_Param(&motion->tracker,0,0,0);
 	Motion_Set_Mag_Gotoline_Param(&motion->tracker,0,0,0);
 	Motion_Update_2D_Line(&motion->tracker,1,0,1,0,0.1);

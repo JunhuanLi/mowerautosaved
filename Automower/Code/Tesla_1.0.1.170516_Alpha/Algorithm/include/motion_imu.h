@@ -43,7 +43,8 @@ void Motion_Targert_Convert_3D(T_motion_tracker* obj);
 extern __inline uint8_t Motion_find_sector_2D(float x, float y){return (x<0)?((y<0)?3:4):((y>0)?1:2);}
 
 void Motion_Set_Path_Param(T_motion_tracker* obj,float advanc);
-void Motion_Set_Angle_Param(T_motion_tracker* obj,float kp, float ki, float il);
+void Motion_Set_cornerAngle_Param(T_motion_tracker* obj,float kp, float ki, float il);
+void Motion_Set_lineAngle_Param(T_motion_tracker* obj,float kp, float ki, float il);
 
 void Motion_Update_2D_Angle(T_motion_tracker* obj,float dir_x,float dir_y,float vel);
 void Motion_Update_2D_Line(T_motion_tracker* obj,float point_x, float point_y, float dir_x, float dir_y, float vel);
@@ -53,4 +54,5 @@ void Motion_Update_2D_Point(T_motion_tracker* obj,float point_x, float point_y,f
 
 float Motion_Vect2Angle(float x, float y);
 void rotateAngle(T_motion_tracker* obj, float angle, T_motion_turn_type rot_dir);
+void trackPoint(T_motion_tracker* obj, float target_x, float target_y);
 #endif

@@ -156,10 +156,12 @@ char thread_motion_stack[1024];
 struct rt_thread thread_motion;
 
 
+
 T_frontBumper g_Bumper;
 T_trigger g_trigger;
 static void mower_motion_square_position(T_motion* motion,float speed, float side_length);
 T_motion motion;
+
 void mower_motion_thread(void* parameter)
 {
   rt_uint32_t recved;
@@ -169,10 +171,10 @@ void mower_motion_thread(void* parameter)
 	
 	rt_thread_delay(2000); //need be removed later 
 	Motion_Init(&motion,1);
-	
+
 	/*Test Program*/
 	//while(is_odo_ready==0);
-	//mower_motion_square_position(&motion,0.05,1.2f);//4 meter
+	//mower_motion_square_position(&motion,0.1,1.0f);//4 meter
 	//mower_motion_square(&motion,0.1,0.2);//10 sec
 	//mower_motion_circle(&motion,0.1,0.0031416);//40 sec
 	
@@ -227,12 +229,19 @@ void mower_motion_thread(void* parameter)
 //			Motion_Run_Mag_Line(&motion.tracker);
 //		}
 		//Motion_Run_Zigzag(&motion);
-		if(motion.tracker.path_imu.rotationFinished == FALSE)
-			rotateAngle(&motion.tracker, 90, MOTION_TURN_COUNTERCLOCKWISE);
-		else{
-			motion.tracker.line_vel = 0.1;
-			motion.tracker.angular_vel = 0;
-		}
+		
+		//½Ç¶ÈĞı×ª²âÊÔ³ÌĞò
+//		if(motion.tracker.path_imu.rotationFinished == FALSE)
+//			rotateAngle(&motion.tracker, 90, MOTION_TURN_COUNTERCLOCKWISE);
+//		else{
+//			motion.tracker.line_vel = 0.1;
+//			motion.tracker.angular_vel = 0;
+//		}
+		
+			//ÑØÖ±Ïß²âÊÔ³ÌĞò
+		trackPoint(&motion.tracker,100.0, 0.0);
+		
+		
 		//Update Motor Command
 		//motion.tracker.line_vel = 0.2;
 		//motion.tracker.angular_vel = 0;
@@ -264,7 +273,7 @@ static void mower_motion_square_position(T_motion* motion,float speed, float sid
 	Motion_Update_2D_Line(&motion->tracker,point_x,point_y,1.0f,0.0f,speed);
 
 //	motion->zigzag.state = T_MOTION_ZIGZAG_STATE_LINE;
-	rt_thread_delay(500);
+//	rt_thread_delay(2000);
 	
 	while(1)
 	{
@@ -311,11 +320,11 @@ static void mower_motion_square_position(T_motion* motion,float speed, float sid
 		
 		if(state == 0 || state == 2 || state == 4 || state == 6)
 		{
+			Motion_Run_2D_Line(&motion->tracker);
 			dist2 = (point_x - motion->tracker.sense.pos_x) * (point_x - motion->tracker.sense.pos_x) + (point_y - motion->tracker.sense.pos_y) * (point_y - motion->tracker.sense.pos_y);
+			
 			if(dist2 < 0.0025f)  //dist < 0.05m = 5cm
 				state ++;
-
-			Motion_Run_Tracker(&motion->tracker);
 		}
 		else if(state == 1)
 		{

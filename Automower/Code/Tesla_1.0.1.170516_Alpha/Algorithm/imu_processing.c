@@ -287,6 +287,12 @@ u8 imu_validation(void)
 		imu.gyro_rps[0] = (float)mpu.gx/GYRO_FACTOR_20602*PI/180;
 		imu.gyro_rps[1] = (float)mpu.gy/GYRO_FACTOR_20602*PI/180;
 		imu.gyro_rps[2] = (float)mpu.gz/GYRO_FACTOR_20602*PI/180;
+		
+		//???参数待调 取出静态gyro的误差范围
+		if(imu.gyro_rps[0] < 0.008 && imu.gyro_rps[0] > -0.008) imu.gyro_rps[0] = 0.0;
+		if(imu.gyro_rps[1] < 0.008 && imu.gyro_rps[1] > -0.008) imu.gyro_rps[1] = 0.0;
+		if(imu.gyro_rps[2] < 0.008 && imu.gyro_rps[2] > -0.008) imu.gyro_rps[2] = 0.0;
+		
 		if((fabs(imu.acc_m_s2[0])>1e-6)&&(fabs(imu.acc_m_s2[1])>1e-6)&&(fabs(imu.acc_m_s2[2])>1e-6)&&(fabs(imu.gyro_rps[0])>1e-8)&&(fabs(imu.gyro_rps[1])>1e-8))
 				flag = 1;
 			else flag = 0;
@@ -294,4 +300,5 @@ u8 imu_validation(void)
 	return flag;
 
 }
+
 

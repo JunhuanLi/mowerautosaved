@@ -27,7 +27,7 @@
 #define MAG_LINE_MAX						52000.0f
 #define MAG_LINE_MIN						50.0f
 #define MAG_LINE_FACING_MARGIN	0.2f
-#define MOTION_ACC							0.08  //3000 /s
+#define MOTION_ACC							0.18  //3000 /s
 
 
 typedef enum
@@ -105,13 +105,13 @@ typedef struct			//for path tracking all position is in unit of meter
 	float 					center_y;		//used for arc
 	float 					center_z;		//used for arc
 	
-	T_pi						position_pi;
 	float						advancing;	//Advancing (in meters) for path tracking
 	float						dir_x_adj;	//The adjusted direction(after position control)
 	float						dir_y_adj;
 	float 					dir_z_adj;
 	
-	T_pi						direction_pi;
+	T_pi						cornerAngle_pi;
+	T_pi						lineAngle_pi;
 	
 	float 					pre_dir_x;
 	float 					pre_dir_y;

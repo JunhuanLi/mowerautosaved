@@ -160,18 +160,18 @@
         <Bp>
           <Number>0</Number>
           <Type>0</Type>
-          <LineNumber>257</LineNumber>
+          <LineNumber>74</LineNumber>
           <EnabledFlag>1</EnabledFlag>
-          <Address>134289764</Address>
+          <Address>134235932</Address>
           <ByteObject>0</ByteObject>
           <HtxType>0</HtxType>
           <ManyObjects>0</ManyObjects>
           <SizeOfObject>0</SizeOfObject>
           <BreakByAccess>0</BreakByAccess>
           <BreakIfRCount>1</BreakIfRCount>
-          <Filename>..\Algorithm\motion_imu.c</Filename>
+          <Filename>..\Algorithm\include\pi.h</Filename>
           <ExecCommand></ExecCommand>
-          <Expression>\\mower_stm32f429\../Algorithm/motion_imu.c\257</Expression>
+          <Expression>\\mower_stm32f429\../Algorithm/include/pi.h\74</Expression>
         </Bp>
       </Breakpoint>
       <WatchWindow1>
@@ -223,27 +223,37 @@
         <Ww>
           <count>9</count>
           <WinNumber>1</WinNumber>
-          <ItemText>dot_product,0x0A</ItemText>
+          <ItemText>pi,0x0A</ItemText>
         </Ww>
         <Ww>
           <count>10</count>
           <WinNumber>1</WinNumber>
-          <ItemText>angleRotated</ItemText>
+          <ItemText>dp1</ItemText>
         </Ww>
         <Ww>
           <count>11</count>
           <WinNumber>1</WinNumber>
-          <ItemText>dist2,0x0A</ItemText>
+          <ItemText>cp</ItemText>
         </Ww>
         <Ww>
           <count>12</count>
           <WinNumber>1</WinNumber>
-          <ItemText>err</ItemText>
+          <ItemText>error</ItemText>
         </Ww>
         <Ww>
           <count>13</count>
           <WinNumber>1</WinNumber>
-          <ItemText>pi,0x0A</ItemText>
+          <ItemText>rot_dir</ItemText>
+        </Ww>
+        <Ww>
+          <count>14</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>motion.tracker.angular_vel</ItemText>
+        </Ww>
+        <Ww>
+          <count>15</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>motion.tracker.line_vel</ItemText>
         </Ww>
       </WatchWindow1>
       <MemoryWindow1>
@@ -1107,7 +1117,7 @@
 
   <Group>
     <GroupName>Driver</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>

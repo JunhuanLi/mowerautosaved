@@ -1,0 +1,13 @@
+.\objects\workqueue.o: ..\OS\components\drivers\src\workqueue.c
+.\objects\workqueue.o: ..\OS\include\rtthread.h
+.\objects\workqueue.o: ..\scons_prj\rtconfig.h
+.\objects\workqueue.o: ..\OS\include\rtdebug.h
+.\objects\workqueue.o: ..\OS\include\rtdef.h
+.\objects\workqueue.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\workqueue.o: ..\OS\include\rtservice.h
+.\objects\workqueue.o: ..\OS\include\rtm.h
+.\objects\workqueue.o: ..\OS\include\rtthread.h
+.\objects\workqueue.o: ..\OS\components\drivers\include\rtdevice.h
+.\objects\workqueue.o: ..\OS\components\drivers\include\drivers/serial.h
+.\objects\workqueue.o: ..\OS\components\drivers\include\rtdevice.h
+.\objects\workqueue.o: ..\OS\components\drivers\include\drivers/pin.h

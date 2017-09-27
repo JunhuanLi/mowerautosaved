@@ -1,0 +1,6 @@
+--cpu Cortex-M4.fp -g --apcs=interwork 
+-I E:\Robotic_Platform\mdk_Prj\RTE
+-I d:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.8.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
+-I d:\Keil_v5\ARM\CMSIS\Include
+--pd "__UVISION_VERSION SETA 520" --pd "STM32F429xx SETA 1"
+--list .\listings\startup_stm32f4xx.lst --xref -o .\objects\startup_stm32f4xx.o --depend .\objects\startup_stm32f4xx.d "..\OS\bsp\stm32f40x\Libraries\CMSIS\ST\STM32F4xx\Source\Templates\arm\startup_stm32f4xx.s"

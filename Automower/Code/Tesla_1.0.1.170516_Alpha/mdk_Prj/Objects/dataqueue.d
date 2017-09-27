@@ -1,0 +1,14 @@
+.\objects\dataqueue.o: ..\OS\components\drivers\src\dataqueue.c
+.\objects\dataqueue.o: ..\OS\include\rtthread.h
+.\objects\dataqueue.o: ..\scons_prj\rtconfig.h
+.\objects\dataqueue.o: ..\OS\include\rtdebug.h
+.\objects\dataqueue.o: ..\OS\include\rtdef.h
+.\objects\dataqueue.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\dataqueue.o: ..\OS\include\rtservice.h
+.\objects\dataqueue.o: ..\OS\include\rtm.h
+.\objects\dataqueue.o: ..\OS\include\rtthread.h
+.\objects\dataqueue.o: ..\OS\components\drivers\include\rtdevice.h
+.\objects\dataqueue.o: ..\OS\components\drivers\include\drivers/serial.h
+.\objects\dataqueue.o: ..\OS\components\drivers\include\rtdevice.h
+.\objects\dataqueue.o: ..\OS\components\drivers\include\drivers/pin.h
+.\objects\dataqueue.o: ..\OS\include\rthw.h

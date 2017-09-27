@@ -1,0 +1,13 @@
+---- eul2quatf Matches (12 in 6 files) ----
+Eul2quatf.c (algorithm):void eul2quatf(float eul[3], float q[4])
+Eul2quatf.c (algorithm):  /* 'eul2quatf:5' c = cos(eul/2); */
+Eul2quatf.c (algorithm):  /* 'eul2quatf:6' s = sin(eul/2); */
+Eul2quatf.c (algorithm):  /* 'eul2quatf:9' q = [c(1).*c(2).*c(3)+s(1).*s(2).*s(3);... */
+Eul2quatf.c (algorithm):  /* 'eul2quatf:10'      c(1).*c(2).*s(3)-s(1).*s(2).*c(3);... */
+Eul2quatf.c (algorithm):  /* 'eul2quatf:11'      c(1).*s(2).*c(3)+s(1).*c(2).*s(3);... */
+Eul2quatf.c (algorithm):  /* 'eul2quatf:12'      s(1).*c(2).*c(3)-c(1).*s(2).*s(3)]; */
+Global.h (include):void  eul2quatf(float eul[3], float q[4]);
+Imu_processing.c (algorithm):	  eul2quatf(eul_rad, quat);		
+Mower_stm32f429.build_log.htm (mdk_prj\objects):.\Objects\mower_stm32f429.axf: Error: L6218E: Undefined symbol eul2quatf (referred from imu_processing.o).
+Stm32f4_rtc.c (driver):eul2quatf(float eul [ 3 ], float q [ 4 ])
+Thread_imu.c (application)://		eul2quatf(eul_temp,quatl);

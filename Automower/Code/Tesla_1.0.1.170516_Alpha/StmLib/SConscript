@@ -1,0 +1,38 @@
+
+Import('RTT_ROOT')
+Import('rtconfig')
+from building import *
+
+# get current directory
+cwd = GetCurrentDir()
+
+src = []
+src += Glob('STM32F4xx_StdPeriph_Driver/src/*.c')
+
+SrcRemove(src, ['stm32f4xx_hash_md5.c'])
+SrcRemove(src, ['stm32f4xx_hash_sha1.c'])
+
+# The set of source files associated with this SConscript file.
+src += Split("""
+CMSIS/system_stm32f4xx.c
+""")
+
+#add for startup script 
+if rtconfig.CROSS_TOOL == 'gcc':
+     src = src + ['CMSIS/gcc/startup_stm32f429_439xx.s']
+elif rtconfig.CROSS_TOOL == 'keil':
+     src = src + ['CMSIS/startup_stm32f429_439xx.s']
+elif rtconfig.CROSS_TOOL == 'iar':
+    src = src + ['CMSIS/iar/startup_stm32f429_439xx.s']
+
+path = [cwd + '/STM32F4xx_StdPeriph_Driver/inc', 
+    cwd + '/CMSIS/Include',
+    cwd + '/CMSIS']
+
+#SrcRemove(src, ['stm32f4xx_hash_md5.c'])
+
+CPPDEFINES = ['USE_STDPERIPH_DRIVER', rtconfig.STM32_TYPE]
+
+group = DefineGroup('STM32_StdPeriph', src, depend = [''], CPPPATH = path, CPPDEFINES = CPPDEFINES)
+
+Return('group')

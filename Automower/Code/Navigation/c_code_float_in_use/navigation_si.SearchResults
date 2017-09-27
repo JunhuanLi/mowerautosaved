@@ -1,0 +1,6 @@
+---- acc_imu_g Matches (6 in 0 files) ----
+Mu_att_ekf.c (att_ekf_related_function): *                float acc_imu_g[3]
+Mu_att_ekf.c (att_ekf_related_function):void mu_att_ekf(float P[16], float acc_imu_g[3], float stateVec[4],
+Mu_att_ekf.c (att_ekf_related_function):  /* 'mu_att_ekf:10' measurement_acc = acc_imu_g/norm(acc_imu_g); */
+Mu_att_ekf.c (att_ekf_related_function):    a21 = fabs(acc_imu_g[k]);
+Mu_att_ekf.c (att_ekf_related_function):    b_acc_imu_g[rtemp] = acc_imu_g[rtemp] / b_y - maxval;

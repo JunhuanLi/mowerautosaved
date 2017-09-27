@@ -1,0 +1,14 @@
+.\objects\module.o: ..\OS\src\module.c
+.\objects\module.o: ..\OS\include\rthw.h
+.\objects\module.o: ..\OS\include\rtthread.h
+.\objects\module.o: ..\scons_prj\rtconfig.h
+.\objects\module.o: ..\OS\include\rtdebug.h
+.\objects\module.o: ..\OS\include\rtdef.h
+.\objects\module.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\module.o: ..\OS\include\rtservice.h
+.\objects\module.o: ..\OS\include\rtm.h
+.\objects\module.o: ..\OS\include\rtthread.h
+.\objects\module.o: ..\OS\components\finsh\finsh.h
+.\objects\module.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\ctype.h
+.\objects\module.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\module.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h

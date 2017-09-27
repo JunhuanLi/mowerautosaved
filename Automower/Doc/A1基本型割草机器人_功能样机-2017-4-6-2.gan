@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="" company="" webLink="" view-date="2017-05-01" view-index="0" gantt-divider-location="708" resource-divider-location="475" version="2.0" locale="zh_CN">
+    <description/>
+    <view zooming-state="default:8" id="gantt-chart">
+        <field id="tpd0" name="类型" width="14" order="0"/>
+        <field id="tpd1" name="优先级" width="15" order="1"/>
+        <field id="tpd3" name="名称" width="36" order="2"/>
+        <field id="tpd4" name="开始日期" width="17" order="3"/>
+        <field id="tpd5" name="结束日期" width="16" order="4"/>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="名称" width="100" order="0"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <calendar id="1" name="default">
+                <default-week sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+                <only-show-weekends value="false"/>
+                <overriden-day-types/>
+                <days/>
+            </calendar>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+            <taskproperty id="tpc0" name="人员" type="custom" valuetype="text" defaultvalue=""/>
+        </taskproperties>
+        <task id="51" name="市面上两个机型测试" color="#8cb6ce" meeting="false" start="2017-05-22" duration="11" complete="0" expand="true"/>
+        <task id="71" name="基本型特点、研发策略的确定、市场收集反馈" color="#ff0033" meeting="true" start="2017-06-06" duration="0" complete="0" expand="true"/>
+        <task id="60" name="硬件驱动" color="#000000" meeting="false" start="2017-05-17" duration="23" complete="0" expand="false">
+            <task id="99" name="传感器开关电池等" color="#8cb6ce" meeting="false" start="2017-05-17" duration="14" complete="0" expand="true"/>
+            <task id="100" name="电机驱动" color="#8cb6ce" meeting="false" start="2017-06-06" duration="9" complete="0" expand="true"/>
+            <task id="125" name="TFT键盘LED等" color="#8cb6ce" meeting="false" start="2017-05-17" duration="17" complete="0" expand="true"/>
+        </task>
+        <task id="52" name="结构设计修改" color="#8cb6ce" meeting="false" start="2017-05-29" duration="10" complete="0" expand="true"/>
+        <task id="53" name="主控板硬件第一版" color="#8cb6ce" meeting="false" start="2017-05-25" duration="23" complete="0" expand="true"/>
+        <task id="54" name="电机驱动硬件第一版" color="#8cb6ce" meeting="false" start="2017-05-25" duration="23" complete="0" expand="true"/>
+        <task id="55" name="基站板硬件第一版" color="#8cb6ce" meeting="false" start="2017-05-25" duration="23" complete="0" expand="true"/>
+        <task id="30" name="主程序的开发" color="#8cb6ce" meeting="false" start="2017-05-17" duration="98" complete="0" expand="true">
+            <customproperty taskproperty-id="tpc0" value=""/>
+        </task>
+        <task id="61" name="基于单点GPS的组合导航定位算法开发" color="#8cb6ce" meeting="false" start="2017-06-07" duration="11" complete="0" expand="true"/>
+        <task id="103" name="主程序基本功能可以跑起来" color="#ff0033" meeting="true" start="2017-06-26" duration="0" complete="0" priority="2" expand="true"/>
+        <task id="40" name="基于硬件第一版的初步运动平台的完成" color="#ff0066" meeting="true" start="2017-06-30" duration="0" complete="0" expand="true">
+            <customproperty taskproperty-id="tpc0" value=""/>
+        </task>
+        <task id="56" name="主计算板硬件第一版" color="#8cb6ce" meeting="false" start="2017-06-15" duration="22" complete="0" expand="true"/>
+        <task id="82" name="硬件第二版" color="#8cb6ce" meeting="false" start="2017-07-17" duration="16" complete="0" expand="true"/>
+        <task id="83" name="硬件第三版" color="#8cb6ce" meeting="false" start="2017-08-21" duration="16" complete="0" expand="true"/>
+        <task id="57" name="UI的设计" color="#8cb6ce" meeting="false" start="2017-05-22" duration="90" complete="0" expand="true"/>
+        <task id="117" name="APP的设计" color="#8cb6ce" meeting="false" start="2017-06-01" duration="82" complete="0" expand="true"/>
+        <task id="62" name="建图" color="#8cb6ce" meeting="false" start="2017-06-06" duration="15" complete="0" expand="true"/>
+        <task id="63" name="避障算法" color="#8cb6ce" meeting="false" start="2017-06-27" duration="45" complete="0" expand="true"/>
+        <task id="64" name="基于单点GPS的路径规划算法" color="#8cb6ce" meeting="false" start="2017-06-27" duration="45" complete="0" expand="true"/>
+        <task id="65" name="狭窄通道算法" color="#8cb6ce" meeting="false" start="2017-06-27" duration="45" complete="0" expand="true"/>
+        <task id="66" name="斜坡模式运动控制" color="#8cb6ce" meeting="false" start="2017-06-19" duration="70" complete="0" expand="true"/>
+        <task id="67" name="渐开线运动控制" color="#8cb6ce" meeting="false" start="2017-06-19" duration="70" complete="0" expand="true"/>
+        <task id="70" name="基站控制" color="#8cb6ce" meeting="false" start="2017-06-05" duration="70" complete="0" expand="true"/>
+        <task id="68" name="遥控模式" color="#8cb6ce" meeting="false" start="2017-06-19" duration="70" complete="0" expand="true"/>
+        <task id="69" name="分区线程" color="#8cb6ce" meeting="false" start="2017-06-19" duration="70" complete="0" expand="true"/>
+        <task id="80" name="回归基站线程" color="#8cb6ce" meeting="false" start="2017-06-19" duration="70" complete="0" expand="true"/>
+        <task id="72" name="边界行走及驶出线程" color="#8cb6ce" meeting="false" start="2017-06-05" duration="80" complete="0" expand="true"/>
+        <task id="81" name="边界识别线程" color="#8cb6ce" meeting="false" start="2017-06-05" duration="80" complete="0" expand="true"/>
+        <task id="74" name="故障检测及处理线程" color="#8cb6ce" meeting="false" start="2017-06-19" duration="70" complete="0" expand="true"/>
+        <task id="75" name="BMS检测线程" color="#8cb6ce" meeting="false" start="2017-06-19" duration="70" complete="0" expand="true"/>
+        <task id="76" name="回归充电线程" color="#8cb6ce" meeting="false" start="2017-06-19" duration="70" complete="0" expand="true"/>
+        <task id="77" name="断点续割线程" color="#8cb6ce" meeting="false" start="2017-06-19" duration="70" complete="0" expand="true"/>
+        <task id="78" name="下雨检测线程" color="#8cb6ce" meeting="false" start="2017-06-19" duration="70" complete="0" expand="true"/>
+        <task id="79" name="避雨线程" color="#8cb6ce" meeting="false" start="2017-06-19" duration="70" complete="0" expand="true"/>
+        <task id="2" name="基本型功能样机的实现" color="#ff0099" meeting="true" start="2017-09-29" duration="0" complete="0" priority="2" expand="true">
+            <customproperty taskproperty-id="tpc0" value=""/>
+        </task>
+        <task id="42" name="基于摄像头方案的路径规划算法开发" color="#8cb6ce" meeting="false" start="2017-09-01" duration="21" complete="0" expand="true">
+            <customproperty taskproperty-id="tpc0" value=""/>
+        </task>
+        <task id="43" name="摄像头边界识别及定位建图" color="#8cb6ce" meeting="false" start="2017-05-08" duration="90" complete="0" expand="true">
+            <customproperty taskproperty-id="tpc0" value=""/>
+        </task>
+        <task id="44" name="展会机型联调" color="#8cb6ce" meeting="false" start="2017-09-11" duration="29" complete="0" expand="true">
+            <customproperty taskproperty-id="tpc0" value=""/>
+        </task>
+        <task id="47" name="展会机型的实现" color="#ff3333" meeting="true" start="2017-10-20" duration="0" complete="0" priority="0" expand="true">
+            <customproperty taskproperty-id="tpc0" value=""/>
+        </task>
+        <task id="37" name="项目管理" color="#8cb6ce" meeting="false" start="2017-05-17" duration="113" complete="0" expand="true">
+            <customproperty taskproperty-id="tpc0" value=""/>
+        </task>
+        <task id="127" name="其它未考虑到事宜" color="#8cb6ce" meeting="false" start="2017-05-17" duration="113" complete="0" expand="true">
+            <customproperty taskproperty-id="tpc0" value=""/>
+        </task>
+    </tasks>
+    <resources>
+        <resource id="1" name="陈超" function="Default:0" contacts="" phone=""/>
+        <resource id="2" name="唐利敏" function="Default:0" contacts="" phone=""/>
+        <resource id="4" name="方睿" function="Default:0" contacts="" phone=""/>
+        <resource id="3" name="杨庆辉" function="Default:0" contacts="" phone=""/>
+        <resource id="7" name="APP" function="Default:0" contacts="" phone=""/>
+        <resource id="8" name="李瑜(暂替硬件)" function="Default:0" contacts="" phone=""/>
+        <resource id="10" name="嵌入式应届生(7月）" function="Default:0" contacts="" phone=""/>
+        <resource id="11" name="谢志华" function="Default:0" contacts="" phone=""/>
+        <resource id="12" name="李莹" function="Default:0" contacts="" phone=""/>
+        <resource id="13" name="张逸弛（6月）" function="Default:0" contacts="" phone=""/>
+        <resource id="14" name="UI" function="Default:0" contacts="" phone=""/>
+        <resource id="15" name="伍浩文" function="Default:0" contacts="" phone=""/>
+    </resources>
+    <allocations>
+        <allocation task-id="42" resource-id="1" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="37" resource-id="1" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="51" resource-id="1" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="63" resource-id="1" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="62" resource-id="1" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="64" resource-id="1" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="65" resource-id="1" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="52" resource-id="1" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="69" resource-id="1" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="44" resource-id="1" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="127" resource-id="1" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="30" resource-id="2" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="51" resource-id="2" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="125" resource-id="2" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="57" resource-id="2" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="117" resource-id="2" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="74" resource-id="2" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="75" resource-id="2" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="78" resource-id="2" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="79" resource-id="2" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="61" resource-id="4" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="51" resource-id="3" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="99" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="100" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="66" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="67" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="68" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="80" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="76" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="77" resource-id="3" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="53" resource-id="8" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="54" resource-id="8" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="55" resource-id="8" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="82" resource-id="8" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="83" resource-id="8" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="43" resource-id="11" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="56" resource-id="11" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="43" resource-id="12" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="81" resource-id="15" function="Default:0" responsible="false" load="100.0"/>
+        <allocation task-id="70" resource-id="15" function="Default:0" responsible="true" load="100.0"/>
+        <allocation task-id="72" resource-id="15" function="Default:0" responsible="false" load="100.0"/>
+    </allocations>
+    <vacations/>
+    <taskdisplaycolumns>
+        <displaycolumn property-id="tpd11" order="-1" width="75" visible="false"/>
+        <displaycolumn property-id="tpc0" order="-1" width="75" visible="false"/>
+        <displaycolumn property-id="tpd9" order="-1" width="75" visible="false"/>
+        <displaycolumn property-id="tpd8" order="-1" width="75" visible="false"/>
+        <displaycolumn property-id="tpd7" order="-1" width="75" visible="false"/>
+        <displaycolumn property-id="tpd10" order="-1" width="75" visible="false"/>
+        <displaycolumn property-id="tpd6" order="-1" width="75" visible="false"/>
+        <displaycolumn property-id="tpd2" order="-1" width="75" visible="false"/>
+        <displaycolumn property-id="tpd0" order="0" width="100" visible="true"/>
+        <displaycolumn property-id="tpd1" order="1" width="109" visible="true"/>
+        <displaycolumn property-id="tpd3" order="2" width="249" visible="true"/>
+        <displaycolumn property-id="tpd4" order="3" width="119" visible="true"/>
+        <displaycolumn property-id="tpd5" order="4" width="111" visible="true"/>
+    </taskdisplaycolumns>
+    <previous>
+        <previous-tasks name="d">
+            <previous-task id="51" start="2017-05-22" duration="11" meeting="false" super="false"/>
+            <previous-task id="71" start="2017-06-06" duration="0" meeting="true" super="false"/>
+            <previous-task id="60" start="2017-05-17" duration="23" meeting="false" super="true"/>
+            <previous-task id="99" start="2017-05-17" duration="14" meeting="false" super="false"/>
+            <previous-task id="100" start="2017-06-06" duration="9" meeting="false" super="false"/>
+            <previous-task id="125" start="2017-05-17" duration="17" meeting="false" super="false"/>
+            <previous-task id="52" start="2017-05-29" duration="10" meeting="false" super="false"/>
+            <previous-task id="53" start="2017-05-25" duration="23" meeting="false" super="false"/>
+            <previous-task id="54" start="2017-05-25" duration="23" meeting="false" super="false"/>
+            <previous-task id="55" start="2017-05-25" duration="23" meeting="false" super="false"/>
+            <previous-task id="30" start="2017-05-17" duration="98" meeting="false" super="false"/>
+            <previous-task id="61" start="2017-06-07" duration="11" meeting="false" super="false"/>
+            <previous-task id="103" start="2017-06-26" duration="0" meeting="true" super="false"/>
+            <previous-task id="40" start="2017-06-30" duration="0" meeting="true" super="false"/>
+            <previous-task id="56" start="2017-06-15" duration="22" meeting="false" super="false"/>
+            <previous-task id="82" start="2017-07-17" duration="16" meeting="false" super="false"/>
+            <previous-task id="83" start="2017-08-21" duration="16" meeting="false" super="false"/>
+            <previous-task id="57" start="2017-05-22" duration="90" meeting="false" super="false"/>
+            <previous-task id="117" start="2017-06-01" duration="82" meeting="false" super="false"/>
+            <previous-task id="62" start="2017-06-06" duration="15" meeting="false" super="false"/>
+            <previous-task id="63" start="2017-06-27" duration="45" meeting="false" super="false"/>
+            <previous-task id="64" start="2017-06-27" duration="45" meeting="false" super="false"/>
+            <previous-task id="65" start="2017-06-27" duration="45" meeting="false" super="false"/>
+            <previous-task id="66" start="2017-06-19" duration="70" meeting="false" super="false"/>
+            <previous-task id="67" start="2017-06-19" duration="70" meeting="false" super="false"/>
+            <previous-task id="70" start="2017-06-05" duration="70" meeting="false" super="false"/>
+            <previous-task id="68" start="2017-06-19" duration="70" meeting="false" super="false"/>
+            <previous-task id="69" start="2017-06-19" duration="70" meeting="false" super="false"/>
+            <previous-task id="80" start="2017-06-19" duration="70" meeting="false" super="false"/>
+            <previous-task id="72" start="2017-06-05" duration="80" meeting="false" super="false"/>
+            <previous-task id="81" start="2017-06-05" duration="80" meeting="false" super="false"/>
+            <previous-task id="74" start="2017-06-19" duration="70" meeting="false" super="false"/>
+            <previous-task id="75" start="2017-06-19" duration="70" meeting="false" super="false"/>
+            <previous-task id="76" start="2017-06-19" duration="70" meeting="false" super="false"/>
+            <previous-task id="77" start="2017-06-19" duration="70" meeting="false" super="false"/>
+            <previous-task id="78" start="2017-06-19" duration="70" meeting="false" super="false"/>
+            <previous-task id="79" start="2017-06-19" duration="70" meeting="false" super="false"/>
+            <previous-task id="2" start="2017-09-29" duration="0" meeting="true" super="false"/>
+            <previous-task id="42" start="2017-09-01" duration="21" meeting="false" super="false"/>
+            <previous-task id="43" start="2017-05-08" duration="90" meeting="false" super="false"/>
+            <previous-task id="44" start="2017-09-11" duration="29" meeting="false" super="false"/>
+            <previous-task id="47" start="2017-10-20" duration="0" meeting="true" super="false"/>
+            <previous-task id="37" start="2017-05-17" duration="113" meeting="false" super="false"/>
+            <previous-task id="127" start="2017-05-17" duration="113" meeting="false" super="false"/>
+        </previous-tasks>
+    </previous>
+    <roles roleset-name="Default"/>
+</project>

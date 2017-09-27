@@ -1,0 +1,10 @@
+.\objects\components.o: ..\OS\src\components.c
+.\objects\components.o: ..\OS\include\rthw.h
+.\objects\components.o: ..\OS\include\rtthread.h
+.\objects\components.o: ..\scons_prj\rtconfig.h
+.\objects\components.o: ..\OS\include\rtdebug.h
+.\objects\components.o: ..\OS\include\rtdef.h
+.\objects\components.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\components.o: ..\OS\include\rtservice.h
+.\objects\components.o: ..\OS\include\rtm.h
+.\objects\components.o: ..\OS\include\rtthread.h

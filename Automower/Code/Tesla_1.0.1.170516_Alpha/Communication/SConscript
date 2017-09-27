@@ -1,0 +1,13 @@
+# for algorithm build
+
+Import('RTT_ROOT')
+Import('rtconfig')
+from building import *
+
+src = Glob('*.c')
+
+CPPPATH = [RTT_ROOT + '/Communication/include']
+
+group = DefineGroup('Communication',src,depend = [''],CPPPATH = CPPPATH)
+
+Return('group')

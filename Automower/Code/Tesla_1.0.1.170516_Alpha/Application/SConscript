@@ -1,0 +1,11 @@
+# for applications build
+
+Import('RTT_ROOT')
+Import('rtconfig')
+from building import *
+
+src = Glob('*.c')
+CPPPATH = [RTT_ROOT + '/Application/include']
+group = DefineGroup('Application',src,depend = [''],CPPPATH = CPPPATH)
+
+Return('group')

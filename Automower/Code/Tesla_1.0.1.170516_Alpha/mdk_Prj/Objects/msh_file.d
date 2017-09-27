@@ -1,0 +1,14 @@
+.\objects\msh_file.o: ..\OS\components\finsh\msh_file.c
+.\objects\msh_file.o: ..\OS\include\rtthread.h
+.\objects\msh_file.o: ..\scons_prj\rtconfig.h
+.\objects\msh_file.o: ..\OS\include\rtdebug.h
+.\objects\msh_file.o: ..\OS\include\rtdef.h
+.\objects\msh_file.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\msh_file.o: ..\OS\include\rtservice.h
+.\objects\msh_file.o: ..\OS\include\rtm.h
+.\objects\msh_file.o: ..\OS\include\rtthread.h
+.\objects\msh_file.o: ..\OS\components\finsh\finsh.h
+.\objects\msh_file.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\ctype.h
+.\objects\msh_file.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdlib.h
+.\objects\msh_file.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\string.h
+.\objects\msh_file.o: ..\OS\components\finsh\msh.h

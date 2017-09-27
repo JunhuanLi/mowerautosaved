@@ -1,0 +1,10 @@
+.\objects\slab.o: ..\OS\src\slab.c
+.\objects\slab.o: ..\OS\include\rthw.h
+.\objects\slab.o: ..\OS\include\rtthread.h
+.\objects\slab.o: ..\scons_prj\rtconfig.h
+.\objects\slab.o: ..\OS\include\rtdebug.h
+.\objects\slab.o: ..\OS\include\rtdef.h
+.\objects\slab.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\slab.o: ..\OS\include\rtservice.h
+.\objects\slab.o: ..\OS\include\rtm.h
+.\objects\slab.o: ..\OS\include\rtthread.h

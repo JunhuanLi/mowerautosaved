@@ -1,0 +1,10 @@
+.\objects\ipc.o: ..\OS\src\ipc.c
+.\objects\ipc.o: ..\OS\include\rtthread.h
+.\objects\ipc.o: ..\scons_prj\rtconfig.h
+.\objects\ipc.o: ..\OS\include\rtdebug.h
+.\objects\ipc.o: ..\OS\include\rtdef.h
+.\objects\ipc.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\ipc.o: ..\OS\include\rtservice.h
+.\objects\ipc.o: ..\OS\include\rtm.h
+.\objects\ipc.o: ..\OS\include\rtthread.h
+.\objects\ipc.o: ..\OS\include\rthw.h

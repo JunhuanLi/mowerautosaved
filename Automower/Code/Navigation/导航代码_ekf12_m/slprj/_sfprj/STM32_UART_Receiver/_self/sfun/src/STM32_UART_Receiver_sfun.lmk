@@ -1,0 +1,26 @@
+CC     = "D:\MATLAB\R2017a\sys\lcc64\lcc64\bin\lcc64.exe"
+LD     = "D:\MATLAB\R2017a\sys\lcc64\lcc64\bin\lcclnk64.exe"
+LIBCMD = "D:\MATLAB\R2017a\sys\lcc64\lcc64\bin\lcclib64.exe"
+CFLAGS = -dll -noregistrylookup  -c -Zp8 -DLCC_WIN64 -DMATLAB_MEX_FILE -DMX_COMPAT_32 -nodeclspec 
+LDFLAGS = -s -dll -L"D:\MATLAB\R2017a\sys\lcc64\lcc64\lib64" -entry LibMain -map sfun.map 
+LIBFLAGS = 
+
+OBJECTS = \
+	"STM32_UART_Receiver_sfun.obj"\
+	"c1_STM32_UART_Receiver.obj"\
+	"STM32_UART_Receiver_sfun_registry.obj"\
+	"lccstub.obj"\
+
+INCLUDE_PATH= -I"D:\MATLAB\R2017a\sys\lcc64\lcc64\include64"  -I"D:\MATLAB\R2017a\extern\include"  -I"D:\MATLAB\R2017a\simulink\include"  -I"D:\MATLAB\R2017a\simulink\include\sf_runtime"  -I"D:\MATLAB\R2017a\stateflow\c\mex\include"  -I"D:\MATLAB\R2017a\rtw\c\src"  -I"D:\Automower\Code\Navigation\µ¼º½´úÂë_ekf12_m\slprj\_sfprj\STM32_UART_Receiver\_self\sfun\src" 
+ 
+
+STM32_UART_Receiver_sfun.mexw64 : $(MAKEFILE) $(OBJECTS)
+	$(LD) $(LDFLAGS) -o STM32_UART_Receiver_sfun.mexw64 @STM32_UART_Receiver_sfun.lmko
+STM32_UART_Receiver_sfun.obj :	"STM32_UART_Receiver_sfun.c"
+	$(CC) $(CFLAGS) $(INCLUDE_PATH) "STM32_UART_Receiver_sfun.c"
+c1_STM32_UART_Receiver.obj :	"c1_STM32_UART_Receiver.c"
+	$(CC) $(CFLAGS) $(INCLUDE_PATH) "c1_STM32_UART_Receiver.c"
+STM32_UART_Receiver_sfun_registry.obj :	"STM32_UART_Receiver_sfun_registry.c"
+	$(CC) $(CFLAGS) $(INCLUDE_PATH) "STM32_UART_Receiver_sfun_registry.c"
+lccstub.obj :	"D:\MATLAB\R2017a\sys\lcc64\lcc64\mex\lccstub.c"
+	$(CC) $(CFLAGS) $(INCLUDE_PATH) "D:\MATLAB\R2017a\sys\lcc64\lcc64\mex\lccstub.c"

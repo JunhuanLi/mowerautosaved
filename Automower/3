@@ -1,0 +1,48 @@
+[33mcommit 18e17fcd4ee6dbd639e1a8033d306da6366a0bcd[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Raymond <chichtlm@163.com>
+Date:   Thu Jun 8 11:38:44 2017 +0800
+
+    modfi lcd12864_parallel.c and add ä¿®æ”¹è®°å½•.txt
+
+[1mdiff --git a/Code/Tesla_1.0.1.170516_Alpha/Driver/lcd12864_parallel.c b/Code/Tesla_1.0.1.170516_Alpha/Driver/lcd12864_parallel.c[m
+[1mindex 93e55f6..de37620 100644[m
+[1m--- a/Code/Tesla_1.0.1.170516_Alpha/Driver/lcd12864_parallel.c[m
+[1m+++ b/Code/Tesla_1.0.1.170516_Alpha/Driver/lcd12864_parallel.c[m
+[36m@@ -188,9 +188,10 @@[m [mvoid write_data(u8 data)[m
+ 	LCD12864_EN = 0;[m
+ }[m
+ [m
+[31m-[m
+[31m-[m
+[31m-[m
+[32m+[m[32mvoid lcd12864_draw_point(void)[m
+[32m+[m[32m{[m
+[32m+[m	[32m;[m
+[32m+[m[32m}[m
+ [m
+ void lcd12864_parallel_init(void)[m
+ {[m
+[1mdiff --git "a/Code/Tesla_1.0.1.170516_Alpha/\344\277\256\346\224\271\350\256\260\345\275\225.txt" "b/Code/Tesla_1.0.1.170516_Alpha/\344\277\256\346\224\271\350\256\260\345\275\225.txt"[m
+[1mnew file mode 100644[m
+[1mindex 0000000..54e0b8c[m
+[1m--- /dev/null[m
+[1m+++ "b/Code/Tesla_1.0.1.170516_Alpha/\344\277\256\346\224\271\350\256\260\345\275\225.txt"[m
+[36m@@ -0,0 +1,17 @@[m
+[32m+[m
+[32m+[m
+[32m+[m[32m2017.5.16 Raymond[m
+[32m+[m	[32mTesla_1.0.1.170516_Alpha[m
+[32m+[m	[32mÖØĞÂÕûÀí¹¤³Ì¼Ü¹¹£¬ÒÔ¼°¸ü¸Ä²¿·ÖÎÄ¼ş´æ·ÅÂ·¾¶£¬¾«¼òstm32±ê×¼¿âµÄÎÄ¼ş¡£[m
+[32m+[m
+[32m+[m[32m2017.5.5 Raymond[m
+[32m+[m	[32mÌí¼ÓÁËTFTÆÁÏÔÊ¾Ä£¿é¡£[m
+[32m+[m
+[32m+[m[32m2017.5.4 Raymond[m
+[32m+[m	[32m¸ü»»Ò»¸ö×îĞÂ£¨2016.10£©±ê×¼¿â¡£[m
+[32m+[m
+[32m+[m[32m2017.5.3 Raymond[m
+[32m+[m	[32mÖØĞÂÕûÀíµÄÏµÍ³Ê±ÖÓÉè¶¨¡£[m
+[32m+[m
+[32m+[m[32m2017.4.21 Raymond[m
+[32m+[m	[32mÉ¾³ıÎÄ¼ş¼Ğext£¬ÒòÎªÎÄ¼ş¼ĞÀïµÄÎÄ¼şºÜ¶à¶¼ÊÇ¸úÏµÍ³Ô­ÓĞµÄÖØ¸´¡£[m
+\ No newline at end of file[m

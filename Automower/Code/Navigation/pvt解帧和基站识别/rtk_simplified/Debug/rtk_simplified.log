@@ -1,0 +1,33 @@
+﻿生成启动时间为 2017/7/27 9:26:19。
+     1>项目“C:\Users\Administrator\Desktop\pvt_read\rtk_simplified\rtk_simplified.vcxproj”在节点 2 上(Build 个目标)。
+     1>InitializeBuildStatus:
+         正在创建“Debug\rtk_simplified.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
+       ClCompile:
+         D:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TC /analyze- /errorReport:prompt main.c
+         main.c
+     1>c:\users\administrator\desktop\pvt_read\rtk_simplified\main.c(42): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>c:\users\administrator\desktop\pvt_read\rtk_simplified\main.c(43): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>c:\users\administrator\desktop\pvt_read\rtk_simplified\main.c(44): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>c:\users\administrator\desktop\pvt_read\rtk_simplified\main.c(45): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>c:\users\administrator\desktop\pvt_read\rtk_simplified\main.c(46): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>c:\users\administrator\desktop\pvt_read\rtk_simplified\main.c(47): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>c:\users\administrator\desktop\pvt_read\rtk_simplified\main.c(48): warning C4244: “=”: 从“unsigned int”转换到“float”，可能丢失数据
+     1>c:\users\administrator\desktop\pvt_read\rtk_simplified\main.c(49): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+     1>c:\users\administrator\desktop\pvt_read\rtk_simplified\main.c(50): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+     1>c:\users\administrator\desktop\pvt_read\rtk_simplified\main.c(51): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+     1>c:\users\administrator\desktop\pvt_read\rtk_simplified\main.c(63): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 d:\program files (x86)\microsoft visual studio 11.0\vc\include\stdio.h(218) : 参见“fopen”的声明
+     1>c:\users\administrator\desktop\pvt_read\rtk_simplified\main.c(64): warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+                 d:\program files (x86)\microsoft visual studio 11.0\vc\include\stdio.h(218) : 参见“fopen”的声明
+     1>c:\users\administrator\desktop\pvt_read\rtk_simplified\main.c(58): warning C4715: “decode_ubx_pvt”: 不是所有的控件路径都返回值
+       Link:
+         D:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Administrator\Desktop\pvt_read\rtk_simplified\Debug\rtk_simplified.exe" /INCREMENTAL /NOLOGO kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Administrator\Desktop\pvt_read\rtk_simplified\Debug\rtk_simplified.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Administrator\Desktop\pvt_read\rtk_simplified\Debug\rtk_simplified.lib" /MACHINE:X86 Debug\main.obj
+         rtk_simplified.vcxproj -> C:\Users\Administrator\Desktop\pvt_read\rtk_simplified\Debug\rtk_simplified.exe
+       FinalizeBuildStatus:
+         正在删除文件“Debug\rtk_simplified.unsuccessfulbuild”。
+         正在对“Debug\rtk_simplified.lastbuildstate”执行 Touch 任务。
+     1>已完成生成项目“C:\Users\Administrator\Desktop\pvt_read\rtk_simplified\rtk_simplified.vcxproj”(Build 个目标)的操作。
+
+生成成功。
+
+已用时间 00:00:00.94

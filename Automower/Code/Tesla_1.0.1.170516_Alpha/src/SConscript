@@ -1,0 +1,12 @@
+# for src build
+
+Import('RTT_ROOT')
+Import('rtconfig')
+from building import *
+
+src = Glob('*.c')
+
+CPPPATH = [RTT_ROOT + '/include',RTT_ROOT + '/scons_prj']
+group = DefineGroup('other',src,depend = [''],CPPPATH = CPPPATH)
+
+Return('group')

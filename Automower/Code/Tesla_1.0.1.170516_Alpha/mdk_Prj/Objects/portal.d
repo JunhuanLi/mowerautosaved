@@ -1,0 +1,13 @@
+.\objects\portal.o: ..\OS\components\drivers\src\portal.c
+.\objects\portal.o: ..\OS\include\rtthread.h
+.\objects\portal.o: ..\scons_prj\rtconfig.h
+.\objects\portal.o: ..\OS\include\rtdebug.h
+.\objects\portal.o: ..\OS\include\rtdef.h
+.\objects\portal.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\stdarg.h
+.\objects\portal.o: ..\OS\include\rtservice.h
+.\objects\portal.o: ..\OS\include\rtm.h
+.\objects\portal.o: ..\OS\include\rtthread.h
+.\objects\portal.o: ..\OS\components\drivers\include\rtdevice.h
+.\objects\portal.o: ..\OS\components\drivers\include\drivers/serial.h
+.\objects\portal.o: ..\OS\components\drivers\include\rtdevice.h
+.\objects\portal.o: ..\OS\components\drivers\include\drivers/pin.h

@@ -106,12 +106,6 @@ static void mower_motion_square(T_motion* motion,float speed, uint32_t side_leng
 		update_motor_control();
 	}
 }
-const float DIR_POS_OFFSET = 0.96f;
-//const float DIR_NEG_OFFSET = -DIR_POS_OFFSET;
-const float DIR_NEG_OFFSET = 0.007f;
-
-
-
 
 static void mower_motion_circle(T_motion* motion,float line_speed, float angle_speed)
 {
@@ -155,7 +149,7 @@ ALIGN(RT_ALIGN_SIZE)
 char thread_motion_stack[1024];
 struct rt_thread thread_motion;
 
-
+int state=1;
 
 T_frontBumper g_Bumper;
 T_trigger g_trigger;
@@ -237,14 +231,9 @@ void mower_motion_thread(void* parameter)
 //			motion.tracker.line_vel = 0.1;
 //			motion.tracker.angular_vel = 0;
 //		}
-		
-			//ÑØÖ±Ïß²âÊÔ³ÌÐò
-		trackPoint(&motion.tracker,100.0, 0.0);
-		
-		
+
 		//Update Motor Command
-		//motion.tracker.line_vel = 0.2;
-		//motion.tracker.angular_vel = 0;
+
 		Motion_Process_Motor_Speed(&motion);
 		update_motor_control();
 		//Debug
@@ -335,6 +324,7 @@ static void mower_motion_square_position(T_motion* motion,float speed, float sid
 				point_x = side_length;
 				point_y = -side_length;
 				Motion_Update_2D_Line(&motion->tracker,point_x,point_y,0.0f,-1.0f,speed);	
+				motion->tracker.path_imu.rotationFinished = FALSE;
 				state ++;
 			}
 		}
@@ -347,6 +337,7 @@ static void mower_motion_square_position(T_motion* motion,float speed, float sid
 				point_x = 0.0f;
 				point_y = -side_length;
 				Motion_Update_2D_Line(&motion->tracker,point_x,point_y,-1.0f,0.0f,speed);
+				motion->tracker.path_imu.rotationFinished = FALSE;
 				state ++;
 			}
 		}
@@ -359,6 +350,7 @@ static void mower_motion_square_position(T_motion* motion,float speed, float sid
 				point_x = 0.0f;
 				point_y = 0.0f;
 				Motion_Update_2D_Line(&motion->tracker,point_x,point_y,0.0f,1.0f,speed);
+				motion->tracker.path_imu.rotationFinished = FALSE;
 				state ++;
 			}
 		}
@@ -371,6 +363,7 @@ static void mower_motion_square_position(T_motion* motion,float speed, float sid
 				point_x = side_length;
 				point_y = 0.0f;
 				Motion_Update_2D_Line(&motion->tracker,point_x,point_y,1.0f,0.0f,speed);
+				motion->tracker.path_imu.rotationFinished = FALSE;
 				state = 0;
 			}
 		}

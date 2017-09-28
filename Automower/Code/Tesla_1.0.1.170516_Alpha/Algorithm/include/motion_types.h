@@ -116,7 +116,8 @@ typedef struct			//for path tracking all position is in unit of meter
 	float 					pre_dir_x;
 	float 					pre_dir_y;
 	T_bool 					preDirStored;
-	T_bool					rotationFinished
+	T_bool					rotationFinished;
+	T_bool					pointReached;
 }T_motion_path_imu;
 
 typedef struct

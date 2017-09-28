@@ -27,63 +27,54 @@ Project File Date:  09/25/2017
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Robot'
-compiling imu_processing.c...
-..\Driver\include\ICM20602.h(104): warning:  #1-D: last line of file ends without a newline
-  #endif
-..\Algorithm\imu_processing.c(89): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-        imu->imu_temp                = (float)mpu.temp*0.01;
-..\Algorithm\imu_processing.c(97): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-        imu->gyro_rps[0]             = (float)mpu.gx/
-YRO_FACTOR*
-I/180 - gyro_bias[0];
-..\Algorithm\imu_processing.c(98): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-        imu->gyro_rps[1]             = (float)mpu.gy/
-YRO_FACTOR*
-I/180 - gyro_bias[1];
-..\Algorithm\imu_processing.c(99): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-        imu->gyro_rps[2]       = (float)mpu.gz/
-YRO_FACTOR*
-I/180 - gyro_bias[2];
-..\Algorithm\imu_processing.c(100): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-        imu->gyro_rps_20602[0] = (float)mpu_20602.gx/
-YRO_FACTOR_20602*PI/180 - gyro_bias_20602[0];
-..\Algorithm\imu_processing.c(101): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-        imu->gyro_rps_20602[1] = (float)mpu_20602.gy/
-YRO_FACTOR_20602*PI/180 - gyro_bias_20602[1];
-..\Algorithm\imu_processing.c(102): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-        imu->gyro_rps_20602[2] = (float)mpu_20602.gz/
-YRO_FACTOR_20602*PI/180 - gyro_bias_20602[2];
-..\Algorithm\imu_processing.c(243): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                if((trace_P_var!=0)&&(trace_P_var<0.001)&&(is_att_valid==0)){
-..\Algorithm\imu_processing.c(284): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                imu.acc_m_s2[0] = (float)mpu.ax/
-CC_FACTOR_20602*9.8;
-..\Algorithm\imu_processing.c(285): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                imu.acc_m_s2[1] = (float)mpu.ay/
-CC_FACTOR_20602*9.8;
-..\Algorithm\imu_processing.c(286): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                imu.acc_m_s2[2] = (float)mpu.az/
-CC_FACTOR_20602*9.8;
-..\Algorithm\imu_processing.c(287): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                imu.gyro_rps[0] = (float)mpu.gx/
-YRO_FACTOR_20602*PI/180;
-..\Algorithm\imu_processing.c(288): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                imu.gyro_rps[1] = (float)mpu.gy/
-YRO_FACTOR_20602*PI/180;
-..\Algorithm\imu_processing.c(289): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                imu.gyro_rps[2] = (float)mpu.gz/
-YRO_FACTOR_20602*PI/180;
-..\Algorithm\imu_processing.c(291): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                if(imu.gyro_rps[0] < 0.008 && imu.gyro_rps[0] > -0.008) imu.gyro_rps[0] = 0.0;
-..\Algorithm\imu_processing.c(292): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                if(imu.gyro_rps[1] < 0.008 && imu.gyro_rps[1] > -0.008) imu.gyro_rps[1] = 0.0;
-..\Algorithm\imu_processing.c(293): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                if(imu.gyro_rps[2] < 0.008 && imu.gyro_rps[2] > -0.008) imu.gyro_rps[2] = 0.0;
-..\Algorithm\imu_processing.c: 18 warnings, 0 errors
+compiling thread_motion.c...
+..\Algorithm\include\map_server.h(97): warning:  #1295-D: Deprecated declaration map_init - give arg types
+  int map_init(); 
+..\Algorithm\include\map_server.h(100): warning:  #1295-D: Deprecated declaration set_all_grids_zero - give arg types
+  int set_all_grids_zero();
+..\Algorithm\include\map_server.h(106): warning:  #1295-D: Deprecated declaration map_clip - give arg types
+  int map_clip(); 
+..\Algorithm\include\map_server.h(107): warning:  #1295-D: Deprecated declaration map_fill - give arg types
+  int map_fill(); 
+..\Algorithm\include\map_server.h(109): warning:  #1295-D: Deprecated declaration ray_tracing - give arg types
+  int ray_tracing(); 
+..\Algorithm\include\map_server.h(111): warning:  #1295-D: Deprecated declaration map_send - give arg types
+  int map_send(); 
+..\Algorithm\include\map_server.h(112): warning:  #1295-D: Deprecated declaration map_load - give arg types
+  int map_load(); 
+..\Algorithm\include\map_server.h(113): warning:  #1295-D: Deprecated declaration map_save - give arg types
+  int map_save(); 
+..\Algorithm\include\global_planner.h(137): warning:  #1295-D: Deprecated declaration planner_init - give arg types
+  int planner_init();
+..\Algorithm\include\global_planner.h(140): warning:  #1295-D: Deprecated declaration cell_cross - give arg types
+  int cell_cross();
+..\Algorithm\include\global_planner.h(144): warning:  #1295-D: Deprecated declaration record_track - give arg types
+  int record_track(); 
+..\Algorithm\include\global_planner.h(145): warning:  #1295-D: Deprecated declaration get_pose_in_lawn - give arg types
+  int get_pose_in_lawn(); 
+..\Algorithm\include\global_planner.h(146): warning:  #1295-D: Deprecated declaration get_pose_bstr - give arg types
+  int get_pose_bstr(); 
+..\Algorithm\include\global_planner.h(149): warning:  #1295-D: Deprecated declaration compute_turn_side - give arg types
+  T_side compute_turn_side();
+..\Algorithm\include\global_planner.h(150): warning:  #1295-D: Deprecated declaration compute_opposite_dir - give arg types
+  float compute_opposite_dir();
+..\Application\thread_motion.c(116): warning:  #177-D: variable "buf"  was declared but never referenced
+        uint8_t buf[100] = "hello!!!!!!!!!\n\r";
+..\Application\thread_motion.c(164): warning:  #223-D: function "mag_sensor_initial" declared implicitly
+        mag_sensor_initial();
+..\Application\thread_motion.c(285): warning:  #177-D: variable "count"  was declared but never referenced
+        uint32_t count = 0;
+..\Application\thread_motion.c(36): warning:  #177-D: function "mower_motion_square"  was declared but never referenced
+  static void mower_motion_square(T_motion* motion,float speed, uint32_t side_length)
+..\Application\thread_motion.c(110): warning:  #177-D: function "mower_motion_circle"  was declared but never referenced
+  static void mower_motion_circle(T_motion* motion,float line_speed, float angle_speed)
+..\Application\thread_motion.c(282): warning:  #177-D: function "mower_motion_square_position"  was declared but never referenced
+  static void mower_motion_square_position(T_motion* motion,float speed, float side_length)
+..\Application\thread_motion.c: 21 warnings, 0 errors
 linking...
-Program Size: Code=97484 RO-data=10140 RW-data=1144 ZI-data=29800  
+Program Size: Code=97852 RO-data=10140 RW-data=1192 ZI-data=29800  
 FromELF: creating hex file...
-".\Objects\mower_stm32f429.axf" - 0 Error(s), 18 Warning(s).
+".\Objects\mower_stm32f429.axf" - 0 Error(s), 21 Warning(s).
 
 <h2>Software Packages used:</h2>
 

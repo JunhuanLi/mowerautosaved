@@ -115,6 +115,69 @@ static __inline void Motion_Norm_2D(float* x, float* y)
 		*y = *y / length;
 	}
 }
+/*
+//弓字形测试参数
+extern T_motion motion;
+extern T_action g_action;
+extern T_params_act g_action_params;
+//弓字形测试程序
+static void Cover(T_motion* motion)
+{
+	zigzag_flag++;
+	if(motion->zigzag.state == T_MOTION_ZIGZAG_STATE_IDLE)
+	{
+		rt_kprintf("Waiting orders! \n");
+		return;
+	}
+	
+	else if(motion->zigzag.state == T_MOTION_ZIGZAG_STATE_LINE)
+	{
+		mag_sensor_update();
+		if( (!motion.tracker.path_imu.pointReached)||() )
+		{
+			trackPoint(&motion.tracker,g_action_params.u_turn_.fin_vec[0]*100.0,
+										g_action_params.u_turn_.fin_vec[1]); //take action_out params_out later
+		}
+		else
+		{
+			//达到指定点，非法，待处理
+		}	
+		if((mag_state.left_sensor_change == 1)&&(mag_state.right_sensor_change == 1)&&(zigzag_flag > 100))
+		{
+			motion->zigzag.state = T_MOTION_ZIGZAG_STATE_TURN;
+			mag_state.right_sensor_change = 0;
+			mag_state.left_sensor_change = 0;
+			zigzag_flag = 0;
+			
+			motion.tracker.path_imu.pointReached = FALSE;
+			stop(&motion.tracker);
+			g_trigger = WIRE_SENSED;
+			make_decision(&g_trigger, &g_action, &g_action_params);
+		}
+	}
+	else if(motion->zigzag.state == T_MOTION_ZIGZAG_STATE_TURN)
+	{
+		if(!motion.tracker.path_imu.rotationFinished)
+		{
+			rotateAngle(&motion.tracker, 180, g_action_params.u_turn_.turn_side);
+			
+			motion.tracker.line_vel = 0.04;//横向位移一个车身宽度时，线速度为0.08m/s
+			
+		}
+		else
+		{
+			motion.tracker.path_imu.rotationFinished = FALSE;
+			motion->zigzag.state = T_MOTION_ZIGZAG_STATE_LINE;
+			stop(&motion.tracker);
+			
+			
+			//此处无trigger，待确认？
+			
+			
+		}
+	}
+}
+*/
 unsigned short zigzag_flag = 0;
 static void Motion_Run_Zigzag(T_motion* motion)
 {
@@ -251,8 +314,8 @@ void Motion_Init(T_motion* motion,uint8_t en)
 	//obj->sensor.mag_polarity = 1;
 	
 	Motion_Set_Path_Param(&motion->tracker,0.4);
-	Motion_Set_cornerAngle_Param(&motion->tracker,0.015,0.001f,0.1);
-	Motion_Set_lineAngle_Param(&motion->tracker,0.015, 0.001f,0.1);
+	Motion_Set_cornerAngle_Param(&motion->tracker,0.005,0.000055f,0.2);
+	Motion_Set_lineAngle_Param(&motion->tracker,0.005, 0.001f,0.1);
 	Motion_Set_Mag_Tracking_Param(&motion->tracker,0,0,0);
 	Motion_Set_Mag_Gotoline_Param(&motion->tracker,0,0,0);
 	Motion_Update_2D_Line(&motion->tracker,1,0,1,0,0.1);

@@ -90,7 +90,11 @@ typedef enum
 	MOTION_MAG_LINE_ORI_OUT_LLRH,			//Left Low Right High outside
 	MOTION_MAG_LINE_ORI_OUT_NORMAL,		//´¹Ö±	              outside
 	MOTION_MAG_LINE_ORI_REVERSE, 
-	MOTION_MAG_LINE_ORI_ALIGNED
+	MOTION_MAG_LINE_ORI_ALIGNED,
+	
+	WIRE_MISSING,
+	NOT_ON_WIRE,
+	ON_WIRE
 }T_motion_mag_line_orientation_type;
 
 typedef struct			//for path tracking all position is in unit of meter 
@@ -122,8 +126,11 @@ typedef struct			//for path tracking all position is in unit of meter
 
 typedef struct
 {
-	T_motion_mag_line_dir_type			dir;								// direct = counter-clockwise reverse = clockwise
+	T_motion_mag_line_dir_type			wire_dir;								// direct = counter-clockwise reverse = clockwise
 	T_motion_mag_line_state_type		state;
+	T_motion_turn_type							turn_dir;
+	T_motion_mag_line_side_type     pre_wheelside;
+	float                           pre_magvalue;
 	
 	T_pi														mag_gotoline_pi;
 	T_pi														mag_tracking_pi;

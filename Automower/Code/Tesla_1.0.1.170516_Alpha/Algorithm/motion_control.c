@@ -88,11 +88,11 @@ void mag_sensor_update(void)
 	}
 	*/
 	
-	if((mag_state.right_sensor_former == MOTION_MAG_LINE_OUTSIDE)&&(mag_state.right_sensor_former == MOTION_MAG_LINE_OUTSIDE)&&(mag_state.right_sensor_old == MOTION_MAG_LINE_OUTSIDE))
+	if((mag_state.right_sensor_now == MOTION_MAG_LINE_OUTSIDE)&&(mag_state.right_sensor_former == MOTION_MAG_LINE_OUTSIDE)&&(mag_state.right_sensor_old == MOTION_MAG_LINE_OUTSIDE))
 	{
 		mag_state.right_sensor_change = 1;
 	}
-	if((mag_state.left_sensor_former == MOTION_MAG_LINE_OUTSIDE)&&(mag_state.left_sensor_former == MOTION_MAG_LINE_OUTSIDE)&&(mag_state.left_sensor_old == MOTION_MAG_LINE_OUTSIDE))
+	if((mag_state.left_sensor_now == MOTION_MAG_LINE_OUTSIDE)&&(mag_state.left_sensor_former == MOTION_MAG_LINE_OUTSIDE)&&(mag_state.left_sensor_old == MOTION_MAG_LINE_OUTSIDE))
 	{
 		mag_state.left_sensor_change = 1;
 	}
@@ -133,9 +133,9 @@ static void Cover(T_motion* motion)
 	else if(motion->zigzag.state == T_MOTION_ZIGZAG_STATE_LINE)
 	{
 		mag_sensor_update();
-		if( (!motion.tracker.path_imu.pointReached)||() )
+		if( (!motion.tracker.path_imu.pointReached) )
 		{
-			trackPoint(&motion.tracker,g_action_params.u_turn_.fin_vec[0]*100.0,
+			trackPoint(&motion.tracker,g_action_params.u_turn_.fin_vec[0],
 										g_action_params.u_turn_.fin_vec[1]); //take action_out params_out later
 		}
 		else
@@ -159,7 +159,8 @@ static void Cover(T_motion* motion)
 	{
 		if(!motion.tracker.path_imu.rotationFinished)
 		{
-			rotateAngle(&motion.tracker, 180, g_action_params.u_turn_.turn_side);
+			rotateAngle(&motion.tracker, g_action_params.u_turn_.fin_vec[0],
+										g_action_params.u_turn_.fin_vec[1] , g_action_params.u_turn_.turn_side);
 			
 			motion.tracker.line_vel = 0.04;//横向位移一个车身宽度时，线速度为0.08m/s
 			

@@ -23,6 +23,7 @@
 #include "pi.h"
 #include "motion_math.h"
 #include "motion_types.h"
+#include "motion_imu.h"
 
 void Motion_Run_Mag_Line(T_motion_tracker* obj);
 
@@ -31,4 +32,6 @@ void Motion_Set_Mag_Gotoline_Param(T_motion_tracker* obj,float kp, float ki, flo
 
 void Motion_Start_Mag_Line(T_motion_tracker* obj,float vel,T_motion_mag_line_dir_type dir);
 
+
+void trackWire(T_motion_tracker* obj);
 #endif

@@ -149,7 +149,7 @@ ALIGN(RT_ALIGN_SIZE)
 char thread_motion_stack[1024];
 struct rt_thread thread_motion;
 
-int state=1;
+int state=0;
 
 T_frontBumper g_Bumper;
 T_trigger g_trigger;
@@ -228,7 +228,7 @@ void mower_motion_thread(void* parameter)
 //		if(motion.tracker.path_imu.rotationFinished == FALSE)
 //			rotateAngle(&motion.tracker, 90, MOTION_TURN_COUNTERCLOCKWISE);
 //		else{
-//			motion.tracker.line_vel = 0.1;
+//			motion.tracker.line_vel = 0.03;
 //			motion.tracker.angular_vel = 0;
 //		}
 

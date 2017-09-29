@@ -21,60 +21,36 @@ Target DLL:      Segger\JL2CM3.dll V2.99.26.0
 Dialog DLL:      TCM.DLL V1.32.0.0
  
 <h2>Project:</h2>
-F:\Automower\Code\Tesla_1.0.1.170516_Alpha\mdk_Prj\mower_v0.1.0.uvprojx
+F:\AmV01\Code\Tesla_1.0.1.170516_Alpha\mdk_Prj\mower_v0.1.0.uvprojx
 Project File Date:  09/25/2017
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Robot'
-compiling thread_motion.c...
-..\Algorithm\include\map_server.h(97): warning:  #1295-D: Deprecated declaration map_init - give arg types
-  int map_init(); 
-..\Algorithm\include\map_server.h(100): warning:  #1295-D: Deprecated declaration set_all_grids_zero - give arg types
-  int set_all_grids_zero();
-..\Algorithm\include\map_server.h(106): warning:  #1295-D: Deprecated declaration map_clip - give arg types
-  int map_clip(); 
-..\Algorithm\include\map_server.h(107): warning:  #1295-D: Deprecated declaration map_fill - give arg types
-  int map_fill(); 
-..\Algorithm\include\map_server.h(109): warning:  #1295-D: Deprecated declaration ray_tracing - give arg types
-  int ray_tracing(); 
-..\Algorithm\include\map_server.h(111): warning:  #1295-D: Deprecated declaration map_send - give arg types
-  int map_send(); 
-..\Algorithm\include\map_server.h(112): warning:  #1295-D: Deprecated declaration map_load - give arg types
-  int map_load(); 
-..\Algorithm\include\map_server.h(113): warning:  #1295-D: Deprecated declaration map_save - give arg types
-  int map_save(); 
-..\Algorithm\include\global_planner.h(137): warning:  #1295-D: Deprecated declaration planner_init - give arg types
-  int planner_init();
-..\Algorithm\include\global_planner.h(140): warning:  #1295-D: Deprecated declaration cell_cross - give arg types
-  int cell_cross();
-..\Algorithm\include\global_planner.h(144): warning:  #1295-D: Deprecated declaration record_track - give arg types
-  int record_track(); 
-..\Algorithm\include\global_planner.h(145): warning:  #1295-D: Deprecated declaration get_pose_in_lawn - give arg types
-  int get_pose_in_lawn(); 
-..\Algorithm\include\global_planner.h(146): warning:  #1295-D: Deprecated declaration get_pose_bstr - give arg types
-  int get_pose_bstr(); 
-..\Algorithm\include\global_planner.h(149): warning:  #1295-D: Deprecated declaration compute_turn_side - give arg types
-  T_side compute_turn_side();
-..\Algorithm\include\global_planner.h(150): warning:  #1295-D: Deprecated declaration compute_opposite_dir - give arg types
-  float compute_opposite_dir();
-..\Application\thread_motion.c(116): warning:  #177-D: variable "buf"  was declared but never referenced
-        uint8_t buf[100] = "hello!!!!!!!!!\n\r";
-..\Application\thread_motion.c(164): warning:  #223-D: function "mag_sensor_initial" declared implicitly
-        mag_sensor_initial();
-..\Application\thread_motion.c(285): warning:  #177-D: variable "count"  was declared but never referenced
-        uint32_t count = 0;
-..\Application\thread_motion.c(36): warning:  #177-D: function "mower_motion_square"  was declared but never referenced
-  static void mower_motion_square(T_motion* motion,float speed, uint32_t side_length)
-..\Application\thread_motion.c(110): warning:  #177-D: function "mower_motion_circle"  was declared but never referenced
-  static void mower_motion_circle(T_motion* motion,float line_speed, float angle_speed)
-..\Application\thread_motion.c(282): warning:  #177-D: function "mower_motion_square_position"  was declared but never referenced
-  static void mower_motion_square_position(T_motion* motion,float speed, float side_length)
-..\Application\thread_motion.c: 21 warnings, 0 errors
+compiling motion_imu.c...
+..\Algorithm\motion_imu.c(148): warning:  #177-D: variable "angular_vel"  was declared but never referenced
+        float                                                                                                                           angular_vel;
+..\Algorithm\motion_imu.c(227): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+                angle = atan2f(y,x)/pi*180.0;
+..\Algorithm\motion_imu.c(255): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+        if(dot_product > 1.0)
+..\Algorithm\motion_imu.c(258): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+        angleRotated = acosf(dot_product)*57.3;
+..\Algorithm\motion_imu.c(259): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+        if(cross_product<0.1)
+..\Algorithm\motion_imu.c(302): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+        if(dist_sq < 0.0025)
+..\Algorithm\motion_imu.c(315): warning:  #1035-D: single-precision operand implicitly converted to double-precision
+                error = acosf(dp1)*57.4;
+..\Algorithm\motion_imu.c(335): warning:  #1-D: last line of file ends without a newline
+  }
+..\Algorithm\motion_imu.c(181): warning:  #177-D: function "Tracking_2D_Line"  was declared but never referenced
+  static void Tracking_2D_Line(T_motion_tracker* obj)
+..\Algorithm\motion_imu.c: 9 warnings, 0 errors
 linking...
-Program Size: Code=97852 RO-data=10140 RW-data=1192 ZI-data=29800  
+Program Size: Code=97548 RO-data=10140 RW-data=1152 ZI-data=29800  
 FromELF: creating hex file...
-".\Objects\mower_stm32f429.axf" - 0 Error(s), 21 Warning(s).
+".\Objects\mower_stm32f429.axf" - 0 Error(s), 9 Warning(s).
 
 <h2>Software Packages used:</h2>
 

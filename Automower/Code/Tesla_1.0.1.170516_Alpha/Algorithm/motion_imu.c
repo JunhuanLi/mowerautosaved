@@ -233,13 +233,15 @@ float Tracking_Vect2Angle(float x, float y)
 	return angle;
 }
 
+float cross_product = 0.0;
 void rotateAngle(T_motion_tracker* obj, float angle, T_motion_turn_type rot_dir) //angle is in degree
 {
 	//转角度测试相关参数
-	float											pi_out=0;
-	float 										angleRotated=0;
-	float											dot_product=0;
-	float											err=0;
+	float											pi_out=0.0;
+	float 										angleRotated=0.0;
+	float											dot_product=0.0;
+	float											err=0.0;
+	
 	if(obj->path_imu.preDirStored == FALSE)
 	{
 		obj->path_imu.pre_dir_x = obj->sense.dir_x;
@@ -247,13 +249,17 @@ void rotateAngle(T_motion_tracker* obj, float angle, T_motion_turn_type rot_dir)
 		obj->path_imu.preDirStored = TRUE;
 	}
 	
-	dot_product = (obj->sense.dir_x*obj->path_imu.pre_dir_x)+(obj->sense.dir_y*obj->path_imu.pre_dir_y);
+	dot_product = (obj->sense.dir_x * obj->path_imu.pre_dir_x)+(obj->sense.dir_y * obj->path_imu.pre_dir_y);
+	cross_product = (obj->sense.dir_x * obj->path_imu.pre_dir_y) - (obj->sense.dir_y * obj->path_imu.pre_dir_x);
 	
 	if(dot_product > 1.0)
 		dot_product = 1.0;
 	
 	angleRotated = acosf(dot_product)*57.3;
-	err = angle - fabs(angleRotated);
+	if(cross_product<0.1)
+		angleRotated = -angleRotated;
+	 
+	err = angle - angleRotated;
 	if(fabsf(err)<=1) //in degree
 	{
 		obj->path_imu.preDirStored = FALSE;

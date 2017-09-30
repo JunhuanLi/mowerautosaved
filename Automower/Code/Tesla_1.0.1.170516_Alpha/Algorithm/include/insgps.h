@@ -25,7 +25,7 @@
 #include <string.h>
 #include "hardware.h"
 #include "global.h"
-
+#include "movvarf.h"
 
 /*********struct************/
 typedef struct
@@ -54,18 +54,23 @@ typedef struct
 	u8   numSV;
 }gpsx;
 
-/*functions*/
+extern float delta_odo_l,delta_odo_r;
 
+/*functions*/
 void ekf7_tu(float acc[3], float pos_prev[3], float vel_prev[3],float quatl[4], float dt, float P[49], float Q[9], float pos[3], float vel[3], float stateVec[7]);
 void ekf7_odom_mu(float pos_prev[3], float vel_prev[3], float *yaw,float stateVec[7], float delta_odo_r, float delta_odo_l,
-                   float P[49], float R[9],float R_odom[9], float D, float pos[3], float vel[3]);
+                   float P[49],float R_odom[9], float D, float pos[3], float vel[3]);
 					   void ekf7_gps6_mu(float pos[3], float vel[3], float *yaw, float stateVec[7],float P[49], double pos_lla_ref[3], gpsx *gps);
 
 //double magHeading2Geog(double points[3]);
 u8 get_gps_data(u8 *init_flag);
 void odom_preprocessing(float *odom_valid,float *delta_odo_l,float *delta_odo_r);
-void send_data(float g_timediff_s,float delta_odo_l,float delta_odo_r,gpsx gps_data);
-extern float delta_odo_l,delta_odo_r;
+void send_data(float dt,float delta_odo_l,float delta_odo_r,gpsx gps_data);
+void send_data_chc(float g_timediff_s_gps,float delta_odo_l,float delta_odo_r,gpsx gps_data);
+void send_data_test1(void);
+void send_data_test2(void);
+
+//double magHeading2Geog(double points[3]);
 
 #endif
 /* Copyright (C), 2017, TOPBAND Robot Team ************************************/

@@ -98,18 +98,21 @@ typedef struct
 
 typedef struct
 {
-	unsigned char left_sensor_former;
-	unsigned char right_sensor_former;
+	//unsigned char left_sensor_former;
+	//unsigned char right_sensor_former;
 	unsigned char left_sensor_now;
 	unsigned char right_sensor_now;
-	unsigned char left_sensor_old;
-	unsigned char right_sensor_old;
+	unsigned char left_sensor_old[6];
+	unsigned char right_sensor_old[6];
 	
 	unsigned char left_sensor_change;
 	unsigned char right_sensor_change;
 }MAG_STATUE;
  
 extern MAG_STATUE mag_state;
+
+
+
 
 /* static variables ***********************************************************/
 /* funcitons ******************************************************************/
@@ -119,6 +122,6 @@ void Motion_Process_Obstacle(T_motion* motion);
 void Motion_Process_Motor_Speed(T_motion* motion);
 
 void Motion_Zigzag_Init(T_motion* motion,float blade_bodywidth_ratio,float blade_overlaping_ratio); 
-void Motion_Zigzag_Update(T_motion* motion,float speed,float heading_x,float heading_y,T_motion_zigzag_turn_dir_type turn_dir);
+void Motion_Zigzag_Start(T_motion* motion,float speed,float heading_x,float heading_y,T_motion_zigzag_turn_dir_type turn_dir);
 
 #endif /* __MOTION_CONTROL_H__ */

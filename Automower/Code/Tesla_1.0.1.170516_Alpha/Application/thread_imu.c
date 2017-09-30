@@ -14,10 +14,8 @@
 #include "stm32f4xx.h"
 #include <rtthread.h>
 #include <stdio.h>
-#include "imu_processing.h"
 #include "imu.h"
 #include "time_control.h"
-#include "typedef.h"
 #include "lcd12864_io_spi.h"
 #include "mower_common.h"
 #include "debug.h"
@@ -40,13 +38,12 @@ void mower_imu_thread(void* parameter)
 	float RAtt[9] = {0.000111111111111111*80,0,0,0,0.000111111111111111*80,0,0,0,0.000111111111111111*80};
 	static float PAtt[16] = {10,0,0,0,0,10,0,0,0,0,0.3,0,0,0,0,10};
 	static float quatl[4] = {1,0,0,0};      
-  static float quatl2[4] = {1,0,0,0};	
+  //static float quatl2[4] = {1,0,0,0};	
 	u16 i;		
-	//static u8 cnt = 0;
 	imu_scaled_body imu;
 	s8 init_flag = 1;
   float eul_temp[3];
-  float eul_temp2[3];
+  //float eul_temp2[3];
 
 	//yaw measurement update
 	float P1 = 1;
@@ -56,14 +53,11 @@ void mower_imu_thread(void* parameter)
 	static float yaw2_mag_prev=0;
 	float yaw1_after_cali_rad=0,yaw2_after_cali_rad=0;//分别是磁罗盘1和2经过校准后输出的航向角
 	float trace_P;
-  //float trace_P_var;
-	//rt_uint32_t recved;
 	float delta_yaw=0;
 	grav = grav_acc((float)pos_lla_init[0]);                 //get local gravity accleration
   
 	while (1)
 	{
-
 		mpu_preprocessing(grav,&imu,&yaw1_after_cali_rad,&yaw2_after_cali_rad);//22ms
 
 		//yaw initialization  //暂时只使用磁罗盘1
@@ -102,9 +96,7 @@ void mower_imu_thread(void* parameter)
 		rot_ele_update(quatl,eul_temp,delta_yaw);
 
     //if(is_att_valid==2)  send_data_imu(g_timediff_s_imu,&imu);
-		if(isnan(quatl[0])&&isnan(quatl[1])&&isnan(quatl[2])&&isnan(quatl[3]))
-			rt_kprintf("\r\ngx = %d",g_sensor_info.mpu.gx);
-		
-    rt_thread_delay(20);// 20ms
+
+    rt_thread_delay(30);// 20ms
 	}
 }

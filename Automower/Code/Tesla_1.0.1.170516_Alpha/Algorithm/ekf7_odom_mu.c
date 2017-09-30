@@ -19,9 +19,41 @@
  *                float vel[3]
  * Return Type  : void
  */
+void	odom_variance(float delta_odo_l,float delta_odo_r,float R_odom[9],float R[9])
+{
+	float dl,dr,abs_dl,abs_dr;
+  static float delta_odo_r_group[7] = {0},delta_odo_l_group[7] = {0};
+	u8 mov_len= 7,i;
+  float times;	
+	
+	/* initialize R matrix*/
+	memcpy(R,R_odom,sizeof(float)*9);
+	/* prepare odo data group */
+	for(i=0;i<mov_len-1;i++) {
+		delta_odo_r_group[i] = delta_odo_r_group[i+1]; 
+		delta_odo_l_group[i] = delta_odo_l_group[i+1]; 
+	}
+	/* get moving variance and its absolute value */
+	delta_odo_l_group[mov_len-1] = delta_odo_l;       delta_odo_r_group[mov_len-1] = delta_odo_r;
+  dl = movvarf(delta_odo_l);	                      dr = movvarf(delta_odo_r);			
+	abs_dl = fabs(dl);                                abs_dr = fabs(dr);
+	
+  if((abs_dl>1e-7)&&(abs_dr>1e-7)){
+		R[0] = dl; R[4] = dr;
+		if((abs_dl>abs_dr)&&(abs_dl/abs_dr>10.0f)) R[4] *= abs_dl/abs_dr;
+		if((abs_dr>abs_dl)&&(abs_dr/abs_dl>10.0f)) R[0] *= abs_dr/abs_dl;
+	}
+  if((abs_dl<=1e-7)&&(abs_dr>1e-7)){
+		R[0] = dr; R[4] = dr;
+	}
+	if((abs_dl>1e-7)&&(abs_dr<=1e-7)){
+		R[0] = dl; R[4] = dl;
+	}
+
+}
 
 void ekf7_odom_mu(float pos_prev[3], float vel_prev[3], float *yaw,float stateVec[7], float delta_odo_r, float delta_odo_l,
-                   float P[49], float R[9],float R_odom[9], float D, float pos[3], float vel[3])
+                   float P[49], float R_odom[9], float D, float pos[3], float vel[3])
 {
   float delta_x;
   float delta_y;
@@ -53,15 +85,12 @@ void ekf7_odom_mu(float pos_prev[3], float vel_prev[3], float *yaw,float stateVe
     1, 0, 0, 0, 0, 0, 0, 0, 1 };
 
   int i;
-
+	float R[9];
+	
   memcpy(R,R_odom,sizeof(float)*9);
-//  dx = movvarf(delta_odo_l);
-//  dy = movvarf(delta_odo_r);			
-//  if((dx!=0)&&(dy!=0)){
-//		R[0]=dx;
-//		R[4]=dy;
-//  }
-			
+
+	//odom_variance(delta_odo_l,delta_odo_r,R_odom,R);
+		
   /* 'ekf7_odom3_mu:4' theta = yaw; */
   /* eul = [yaw,pitch,roll] in the order of ZYX */
   /* 'ekf7_odom3_mu:5' r = delta_odo_r; */

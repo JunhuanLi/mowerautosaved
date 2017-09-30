@@ -106,6 +106,10 @@ static void mower_motion_square(T_motion* motion,float speed, uint32_t side_leng
 		update_motor_control();
 	}
 }
+const float DIR_POS_OFFSET = 0.96f;
+//const float DIR_NEG_OFFSET = -DIR_POS_OFFSET;
+const float DIR_NEG_OFFSET = 0.007f;
+
 
 static void mower_motion_circle(T_motion* motion,float line_speed, float angle_speed)
 {
@@ -148,13 +152,15 @@ static void mower_motion_circle(T_motion* motion,float line_speed, float angle_s
 ALIGN(RT_ALIGN_SIZE)
 char thread_motion_stack[1024];
 struct rt_thread thread_motion;
-
-int state=0;
-
-T_frontBumper g_Bumper;
-T_trigger g_trigger;
 static void mower_motion_square_position(T_motion* motion,float speed, float side_length);
-T_motion motion;
+
+extern T_frontBumper g_Bumper;
+extern T_trigger g_trigger;
+
+
+extern T_motion motion;
+extern T_action g_action;
+extern T_params_act g_action_params;
 
 void mower_motion_thread(void* parameter)
 {
@@ -163,28 +169,36 @@ void mower_motion_thread(void* parameter)
 	
 	mag_sensor_initial();
 	
-	rt_thread_delay(2000); //need be removed later 
+	rt_thread_delay(1000); //need be removed later 
 	Motion_Init(&motion,1);
-
+	
 	/*Test Program*/
 	//while(is_odo_ready==0);
-	//mower_motion_square_position(&motion,0.1,1.0f);//4 meter
-	//mower_motion_square(&motion,0.1,0.2);//10 sec
+	//mower_motion_square_position(&motion,0.1,1.2f);//4 meter
+	//mower_motion_square(&motion,0.1,0.1);//10 sec
 	//mower_motion_circle(&motion,0.1,0.0031416);//40 sec
 	
-//	Motion_Update_2D_Angle(&motion.tracker,1.0f,0.0f,0.1);
-//	//Motion_Start_Mag_Line(&motion.tracker, 0.1, MOTION_MAG_LINE_DIRECT);
-//	//Motion_Update_2D_Line(&motion.tracker, 5.0f, 0.0f, 1.0f, 0.0f, 0.2);
-//	Motion_Zigzag_Update(&motion,0.1,1,0,T_MOTION_ZIGZAG_TURN_CLOCKWISE);
-//	Motion_Zigzag_Init(&motion, 0.5, 0.5);
-//	motion.motion_state = MOTION_STATE_ZIGZAG;
-//	motion.zigzag.heading_x = 1.0f;
-//	motion.zigzag.heading_y = 0.0f;
+	//Motion_Update_2D_Angle(&motion.tracker,1.0f,0.0f,0.1);
+	//Motion_Start_Mag_Line(&motion.tracker, 0.1, MOTION_MAG_LINE_DIRECT);
+	//Motion_Update_2D_Line(&motion.tracker, 5.0f, 0.0f, 1.0f, 0.0f, 0.1);
+	//Motion_Zigzag_Start(&motion,0.1,1,0,T_MOTION_ZIGZAG_TURN_CLOCKWISE);
+	//Motion_Zigzag_Init(&motion, 0.5, 0.5);
+	
+	motion.motion_state = MOTION_STATE_ZIGZAG;
+	motion.zigzag.state = T_MOTION_ZIGZAG_STATE_LINE;
+	
+	g_trigger = INIT_PROC;
+	make_decision(&g_trigger, &g_action, &g_action_params);
+	
+	g_action_params.u_turn_.fin_vec[0]=1;
+	g_action_params.u_turn_.fin_vec[1]=0;
+	
+	rt_kprintf("\r\n Thread Motion Initial...");
 	while (1)
 	{
 		rt_event_recv(&sys_event, SYS_EVN_MOTION, RT_EVENT_FLAG_AND|RT_EVENT_FLAG_CLEAR, RT_WAITING_FOREVER, &recved);
 		//rt_enter_critical();	//	LCD_PWM = 0;
-		
+		//rt_kprintf("\r\n Thread Motion is running!");
 		/*
 		//bumper issue
 		get_front_bumper_info(&g_Bumper);
@@ -193,6 +207,16 @@ void mower_motion_thread(void* parameter)
 			g_trigger = RIGID_TOUCHED;
 		}
 		//sensor issue
+		
+		
+//½Ç¶ÈÐý×ª²âÊÔ³ÌÐò
+//		if(motion.tracker.path_imu.rotationFinished == FALSE)
+//			rotateAngle(&motion.tracker, 90, MOTION_TURN_COUNTERCLOCKWISE);
+//		else{
+//			motion.tracker.line_vel = 0.1;
+//			motion.tracker.angular_vel = 0;
+//		}
+		
 		
 		mag_sensor_update();
 		if((mag_state.right_sensor_change == 1)&&(mag_state.left_sensor_change == 1))
@@ -209,37 +233,35 @@ void mower_motion_thread(void* parameter)
 		//Update all the sensors first
 		Motion_Get_Position_2D(&motion.tracker.sense);
 		Motion_Get_Sensor(&motion.tracker.sense);
+		
+		//global planner record
+		record_track(); 
+		update_map_nav();
 		//Motion_Process_Obstacle(&motion);
 		
 		//Run controller
 		
 		//Motion_Run_Tracker(&motion.tracker);
-//		if(motion.motion_state == MOTION_STATE_ZIGZAG)
-//		{
-//			Motion_Run(&motion);
-//		}
-//		else if(motion.motion_state == MOTION_STATE_MAGLINE)
-//		{
-//			Motion_Run_Mag_Line(&motion.tracker);
-//		}
-		//Motion_Run_Zigzag(&motion);
-		
-		//½Ç¶ÈÐý×ª²âÊÔ³ÌÐò
-//		if(motion.tracker.path_imu.rotationFinished == FALSE)
-//			rotateAngle(&motion.tracker, 90, MOTION_TURN_COUNTERCLOCKWISE);
-//		else{
-//			motion.tracker.line_vel = 0.03;
-//			motion.tracker.angular_vel = 0;
-//		}
+		if(motion.motion_state == MOTION_STATE_ZIGZAG)
+		{
+			//make_decision(&g_trigger, &g_action, &g_action_params);
+			
+			//params trans
+			
+			
+			Motion_Run(&motion);
+			
+			
+		}
 
 		//Update Motor Command
-
+		
 		Motion_Process_Motor_Speed(&motion);
 		update_motor_control();
 		//Debug
 		//rt_kprintf("angle = %d                x = %d                 y = %d \n\r",(int)(eul_rad[0]*10*57.3), (int)(motion.tracker.sense.pos_x*100), (int)(motion.tracker.sense.pos_y*100));
 		//rt_kprintf("left = %d, right =%d \n\r",(int)(motion.tracker.line_vel),(int)(motion.tracker.angular_vel));
-		//rt_kprintf("left = %d, right = %d \r\n\r",leftsensor_data,rightsensor_data);
+		//rt_kprintf("left = %d, right = %d \r\n\r", leftsensor_data,rightsensor_data);
 		
 		
 		//rt_event_send(&sys_event,SYS_EVN_MOTOR);
@@ -247,7 +269,8 @@ void mower_motion_thread(void* parameter)
 			//	rt_exit_critical();
 		}
 }
-float dist2;
+
+/*Turn to mag*/
 static void mower_motion_square_position(T_motion* motion,float speed, float side_length)
 {
 	uint8_t state = 0;
@@ -260,10 +283,10 @@ static void mower_motion_square_position(T_motion* motion,float speed, float sid
 	point_x = side_length;
 	point_y = 0.0f;
 	Motion_Update_2D_Line(&motion->tracker,point_x,point_y,1.0f,0.0f,speed);
-
-//	motion->zigzag.state = T_MOTION_ZIGZAG_STATE_LINE;
-//	rt_thread_delay(2000);
-	
+	Motion_Process_Motor_Speed(motion);
+	update_motor_control();
+	motion->zigzag.state = T_MOTION_ZIGZAG_STATE_LINE;
+	rt_thread_delay(500);
 	while(1)
 	{
 		rt_event_recv(&sys_event, SYS_EVN_MOTION, RT_EVENT_FLAG_AND|RT_EVENT_FLAG_CLEAR, RT_WAITING_FOREVER, &recved);
@@ -280,228 +303,100 @@ static void mower_motion_square_position(T_motion* motion,float speed, float sid
 		}
 		*/
 		
-//		if(motion->zigzag.state == T_MOTION_ZIGZAG_STATE_TURN)
-//		{
-//			motion->tracker.line_vel = 0;
-//			motion->tracker.angular_vel = speed;
-//			//motion->zigzag.state = T_MOTION_ZIGZAG_STATE_LINE;
-//			
-//			
-//			Motion_Get_Position_2D(&motion->tracker.sense);
-//			Motion_Get_Sensor(&motion->tracker.sense);
-//			Motion_Update_2D_Line(&motion->tracker,point_x,point_y,0.0f,0.0f,speed);
-//			
-//			if(motion->tracker.sense.dir_x < -0.96)
-//			{
-//				motion->zigzag.state = T_MOTION_ZIGZAG_STATE_LINE;
-//			}
-//		}
-//		
-//		if(motion->zigzag.state == T_MOTION_ZIGZAG_STATE_LINE)
-//		{
-//			motion->tracker.line_vel = speed;
-//			motion->tracker.angular_vel = 0;
-//			Motion_Update_2D_Line(&motion->tracker,point_x,point_y,0.0f,0.0f,speed);	
-//		}
-
+		if(motion->zigzag.state == T_MOTION_ZIGZAG_STATE_TURN)
+		{
+			motion->tracker.line_vel = 0;
+			motion->tracker.angular_vel = speed;
+			//motion->zigzag.state = T_MOTION_ZIGZAG_STATE_LINE;
+			
+			
+			Motion_Get_Position_2D(&motion->tracker.sense);
+			Motion_Get_Sensor(&motion->tracker.sense);
+			Motion_Update_2D_Line(&motion->tracker,point_x,point_y,0.0f,0.0f,speed);
+			
+			if(motion->tracker.sense.dir_x < -0.96)
+			{
+				motion->zigzag.state = T_MOTION_ZIGZAG_STATE_LINE;
+			}
+		}
+		
+		if(motion->zigzag.state == T_MOTION_ZIGZAG_STATE_LINE)
+		{
+			motion->tracker.line_vel = speed;
+			motion->tracker.angular_vel = 0;
+			Motion_Update_2D_Line(&motion->tracker,point_x,point_y,0.0f,0.0f,speed);	
+		}
+		/*
 		Motion_Get_Position_2D(&motion->tracker.sense);
 		Motion_Get_Sensor(&motion->tracker.sense);
 		
 		if(state == 0 || state == 2 || state == 4 || state == 6)
 		{
-			Motion_Run_2D_Line(&motion->tracker);
-			dist2 = (point_x - motion->tracker.sense.pos_x) * (point_x - motion->tracker.sense.pos_x) + (point_y - motion->tracker.sense.pos_y) * (point_y - motion->tracker.sense.pos_y);
-			
+			float dist2 = (point_x - motion->tracker.sense.pos_x) * (point_x - motion->tracker.sense.pos_x) + (point_y - motion->tracker.sense.pos_y) * (point_y - motion->tracker.sense.pos_y);
 			if(dist2 < 0.0025f)  //dist < 0.05m = 5cm
 				state ++;
+
+			Motion_Run_Tracker(&motion->tracker);
 		}
 		else if(state == 1)
 		{
-			if(!motion->tracker.path_imu.rotationFinished)
-				rotateAngle(&motion->tracker, 90, MOTION_TURN_COUNTERCLOCKWISE);
-			else
+			motion->tracker.line_vel = 0;
+			motion->tracker.angular_vel = speed;
+			
+			if(motion->tracker.sense.dir_y < DIR_NEG_OFFSET)
 			{
 				point_x = side_length;
 				point_y = -side_length;
 				Motion_Update_2D_Line(&motion->tracker,point_x,point_y,0.0f,-1.0f,speed);	
-				motion->tracker.path_imu.rotationFinished = FALSE;
 				state ++;
 			}
 		}
 		else if(state == 3)
 		{
-			if(!motion->tracker.path_imu.rotationFinished)
-				rotateAngle(&motion->tracker, 90, MOTION_TURN_COUNTERCLOCKWISE);
-			else
+			motion->tracker.line_vel = 0;
+			motion->tracker.angular_vel = speed;
+			
+			if(motion->tracker.sense.dir_x < DIR_NEG_OFFSET)
 			{
 				point_x = 0.0f;
 				point_y = -side_length;
 				Motion_Update_2D_Line(&motion->tracker,point_x,point_y,-1.0f,0.0f,speed);
-				motion->tracker.path_imu.rotationFinished = FALSE;
 				state ++;
 			}
 		}
 		else if(state == 5)
 		{
-			if(!motion->tracker.path_imu.rotationFinished)
-				rotateAngle(&motion->tracker, 90, MOTION_TURN_COUNTERCLOCKWISE);
-			else
+			motion->tracker.line_vel = 0;
+			motion->tracker.angular_vel = speed;
+			
+			if(motion->tracker.sense.dir_y > DIR_POS_OFFSET)
 			{
 				point_x = 0.0f;
 				point_y = 0.0f;
 				Motion_Update_2D_Line(&motion->tracker,point_x,point_y,0.0f,1.0f,speed);
-				motion->tracker.path_imu.rotationFinished = FALSE;
 				state ++;
 			}
 		}
 		else if(state == 7)
 		{
-			if(!motion->tracker.path_imu.rotationFinished)
-				rotateAngle(&motion->tracker, 90, MOTION_TURN_COUNTERCLOCKWISE);
-			else
+			motion->tracker.line_vel = 0;
+			motion->tracker.angular_vel = speed;
+			
+			if(motion->tracker.sense.dir_x > DIR_POS_OFFSET)
 			{
 				point_x = side_length;
 				point_y = 0.0f;
 				Motion_Update_2D_Line(&motion->tracker,point_x,point_y,1.0f,0.0f,speed);
-				motion->tracker.path_imu.rotationFinished = FALSE;
 				state = 0;
 			}
 		}
+		*/
 		
 		/*Motor Speed update*/
 		Motion_Process_Motor_Speed(motion);
 		update_motor_control();
 	}
 }
-
-/*Turn to mag*/
-
-//static void mower_motion_square_position(T_motion* motion,float speed, float side_length)
-//{
-//	uint8_t state = 0;
-//	uint32_t count = 0;
-//	float point_x = 0;
-//	float point_y = 0;
-//	
-//	rt_uint32_t recved;
-//	
-//	point_x = side_length;
-//	point_y = 0.0f;
-//	Motion_Update_2D_Line(&motion->tracker,point_x,point_y,1.0f,0.0f,speed);
-//	Motion_Process_Motor_Speed(motion);
-//	update_motor_control();
-//	motion->zigzag.state = T_MOTION_ZIGZAG_STATE_LINE;
-//	rt_thread_delay(500);
-//	while(1)
-//	{
-//		rt_event_recv(&sys_event, SYS_EVN_MOTION, RT_EVENT_FLAG_AND|RT_EVENT_FLAG_CLEAR, RT_WAITING_FOREVER, &recved);
-
-//		/*
-//		mag_sensor_update();
-//		if((mag_state.right_sensor_change == 1)&&(mag_state.left_sensor_change == 1))
-//		{
-//			//g_trigger = WIRE_SENSED;
-//			motion->zigzag.state = T_MOTION_ZIGZAG_STATE_TURN;
-//			
-//			mag_state.right_sensor_change = 0;
-//			mag_state.left_sensor_change = 0;
-//		}
-//		*/
-//		
-//		if(motion->zigzag.state == T_MOTION_ZIGZAG_STATE_TURN)
-//		{
-//			motion->tracker.line_vel = 0;
-//			motion->tracker.angular_vel = speed;
-//			//motion->zigzag.state = T_MOTION_ZIGZAG_STATE_LINE;
-//			
-//			
-//			Motion_Get_Position_2D(&motion->tracker.sense);
-//			Motion_Get_Sensor(&motion->tracker.sense);
-//			Motion_Update_2D_Line(&motion->tracker,point_x,point_y,0.0f,0.0f,speed);
-//			
-//			if(motion->tracker.sense.dir_x < -0.96)
-//			{
-//				motion->zigzag.state = T_MOTION_ZIGZAG_STATE_LINE;
-//			}
-//		}
-//		
-//		if(motion->zigzag.state == T_MOTION_ZIGZAG_STATE_LINE)
-//		{
-//			motion->tracker.line_vel = speed;
-//			motion->tracker.angular_vel = 0;
-//			Motion_Update_2D_Line(&motion->tracker,point_x,point_y,0.0f,0.0f,speed);	
-//		}
-//		/*
-//		Motion_Get_Position_2D(&motion->tracker.sense);
-//		Motion_Get_Sensor(&motion->tracker.sense);
-//		
-//		if(state == 0 || state == 2 || state == 4 || state == 6)
-//		{
-//			float dist2 = (point_x - motion->tracker.sense.pos_x) * (point_x - motion->tracker.sense.pos_x) + (point_y - motion->tracker.sense.pos_y) * (point_y - motion->tracker.sense.pos_y);
-//			if(dist2 < 0.0025f)  //dist < 0.05m = 5cm
-//				state ++;
-
-//			Motion_Run_Tracker(&motion->tracker);
-//		}
-//		else if(state == 1)
-//		{
-//			motion->tracker.line_vel = 0;
-//			motion->tracker.angular_vel = speed;
-//			
-//			if(motion->tracker.sense.dir_y < DIR_NEG_OFFSET)
-//			{
-//				point_x = side_length;
-//				point_y = -side_length;
-//				Motion_Update_2D_Line(&motion->tracker,point_x,point_y,0.0f,-1.0f,speed);	
-//				state ++;
-//			}
-//		}
-//		else if(state == 3)
-//		{
-//			motion->tracker.line_vel = 0;
-//			motion->tracker.angular_vel = speed;
-//			
-//			if(motion->tracker.sense.dir_x < DIR_NEG_OFFSET)
-//			{
-//				point_x = 0.0f;
-//				point_y = -side_length;
-//				Motion_Update_2D_Line(&motion->tracker,point_x,point_y,-1.0f,0.0f,speed);
-//				state ++;
-//			}
-//		}
-//		else if(state == 5)
-//		{
-//			motion->tracker.line_vel = 0;
-//			motion->tracker.angular_vel = speed;
-//			
-//			if(motion->tracker.sense.dir_y > DIR_POS_OFFSET)
-//			{
-//				point_x = 0.0f;
-//				point_y = 0.0f;
-//				Motion_Update_2D_Line(&motion->tracker,point_x,point_y,0.0f,1.0f,speed);
-//				state ++;
-//			}
-//		}
-//		else if(state == 7)
-//		{
-//			motion->tracker.line_vel = 0;
-//			motion->tracker.angular_vel = speed;
-//			
-//			if(motion->tracker.sense.dir_x > DIR_POS_OFFSET)
-//			{
-//				point_x = side_length;
-//				point_y = 0.0f;
-//				Motion_Update_2D_Line(&motion->tracker,point_x,point_y,1.0f,0.0f,speed);
-//				state = 0;
-//			}
-//		}
-//		*/
-//		
-//		/*Motor Speed update*/
-//		Motion_Process_Motor_Speed(motion);
-//		update_motor_control();
-//	}
-//}
 
 
 

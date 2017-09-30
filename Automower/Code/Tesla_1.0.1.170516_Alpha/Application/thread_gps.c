@@ -26,7 +26,7 @@
 #include "debug.h"
 #include "lcd12864_io_spi.h"
 #include "mower_common.h"
-
+#include "conv_enc.h"
 
 /*在分配堆栈空间时，必须要对其*/
 ALIGN(RT_ALIGN_SIZE)
@@ -248,26 +248,40 @@ void get_vel_ned(float vel[3])
 	vel[2] = vel_ned_m_s[2];
 }
 
+static int checksum(unsigned char *buff, int len)
+{
+    unsigned char cka=0,ckb=0;
+    int i;
+	  int checkbit;
+    
+    for (i=2;i<len-2;i++) {
+			cka+=buff[i]; 
+			ckb+=cka;
+    }
+    checkbit = (cka==buff[len-2]&&ckb==buff[len-1]);
+		return checkbit;
+}
+
 u8 get_gps_data(u8 *init_flag)
 {
 	s16 i;
 	u8 gpsdata_index = 0;
 	u8 gpsdata_flag = 0;
-	
+	static u64 sum = 0,check_sum = 0;
+		
 	if((USART_GPS_RX_BUFFER[0] == 0xB5) &&(USART_GPS_RX_BUFFER[1] == 0x62)){
-		//if((USART_GPS_RX_BUFFER[2]==0x01)&&(USART_GPS_RX_BUFFER[3]==0x07)&&(USART_GPS_RX_BUFFER[4]==0x5C)&&(USART_GPS_RX_BUFFER[5]==0x00)){
-			if((USART_GPS_RX_BUFFER[2]==0x01)&&(USART_GPS_RX_BUFFER[3]==0x07)){
-
+		if((USART_GPS_RX_BUFFER[2]==0x01)&&(USART_GPS_RX_BUFFER[3]==0x07)&&(USART_GPS_RX_BUFFER[4]==0x5C)&&(USART_GPS_RX_BUFFER[5]==0x00)){
+			 if (checksum(USART_GPS_RX_BUFFER,100))  {
 				gpsdata_flag = 1;
-			
-				//USART_GPS_DISABLE();
 				USART_Cmd(USART_GPS, DISABLE); 
+				check_sum++;
+			 }
+			 sum++;
 		}
 	}
 	
 	if(gpsdata_flag == 1){
 		ubx_nav_pvt(&GPS_DATA, (u8*)USART_GPS_RX_BUFFER+6+gpsdata_index);   //ubx协议解析，本地时间赋值
-		
 		//USART_GPS_ENABLE();
 		USART_Cmd(USART_GPS, ENABLE);
 		if(*init_flag == 1){
@@ -296,19 +310,19 @@ u8 trapping_detect(float pos[3])
 	u8 trap_flag=0;
 	
 	trapping_time += get_time_diff_trapping()*1e-6;
+	
 	if(0<trapping_time && trapping_time<=TRAP_TIME_TRESH){
 		for(i=0;i<2;i++){
 			if(pos[i]>max_pos[i]) max_pos[i] = pos[i];
 			if(pos[i]<min_pos[i]) min_pos[i] = pos[i];
 		}
 	}
+	
 	if(trapping_time>=TRAP_TIME_TRESH){
 		trapping_time = 0;
 		if(((max_pos[0]-min_pos[0])<=TRAP_POS_TRESH)&&((max_pos[1]-min_pos[1])<=TRAP_POS_TRESH))	trap_flag = 1;
 	}
-	
 	return trap_flag;
-
 }
 
 
@@ -319,70 +333,65 @@ void mower_gps_thread(void* parameter)
 	static unsigned short int i = 0;
 	float acc_imu_m_s2[3] ;
 	static float P[49] = {100,0,0,0,0,0,0,0,100,0,0,0,0,0,0,0,100,0,0,0,0,0,0,0,100,0,0,0,0,0,0,0,100,0,0,0,0,0,0,0,100,0,0,0,0,0,0,0,100};
-   float Q[9] = {0.800000000000000*2.64,0,0,0,0.800000000000000*2.64,0,0,0,0.800000000000000*2.64};
-   float R_odom[9] = {0.00001*1.3624,0,0,0,0.00001*1.3624,0,0,0,0.01*1.3624};	
-//	float Q[9] = {0.96,0,0,0,0.96,0,0,0,0.96};
-//  float R_odom[9] = {0.00001,0,0,0,0.00001,0,0,0,0.01};	
-	float R_temp[9];
+    float Q[9] = {0.800000000000000*2.64,0,0,0,0.800000000000000*2.64,0,0,0,0.800000000000000*2.64};
+    float R_odom[9] = {0.00001*1.3624,0,0,0,0.00001*1.3624,0,0,0,0.01*1.3624};	
 	float stateVec[7] = {0};
 	u8 gpsdata_flag = 0;
 	u8 init_flag = 1;
 	float odom_valid;
 	static float pos_prev[3] = {0,0,0},vel_prev[3]={0,0,0};
 	float pos_temp[3],vel_temp[3];
-	float movvar_odo_l,movvar_odo_r;
 	rt_uint32_t recved;
 	u8 trap_period_flag = 0;
+	rt_base_t level = 0;
+	static u8 first_time = 0;
+	float g_timediff_s_gps;           //time difference[s]
+
 	
 	while (1)
 	{
-		//rt_enter_critical();		
-		// 等待50ms的时间事件
-		rt_event_recv(&sys_event, SYS_EVN_GPS, RT_EVENT_FLAG_OR|RT_EVENT_FLAG_CLEAR, RT_WAITING_FOREVER, &recved);
-		
-		//if(x&&is_att_valid == 2){
-		if(fabs(g_sensor_scaled_body.acc_m_s2[2])>4.5f&&is_att_valid == 2){
-		/**************************prepare acceleration data **********************/
-		memcpy(acc_imu_m_s2,g_sensor_scaled_body.acc_m_s2,sizeof(acc_imu_m_s2));
-			
-		/***************integrated navigation: time update*************************/
 		g_timediff_s_gps = (float)get_time_diff2()*1e-6;		
-		ekf7_tu(acc_imu_m_s2, pos_prev,vel_prev,quat,g_timediff_s_gps, P, Q, pos_temp, vel_temp,stateVec);
+		if(fabs(g_sensor_scaled_body.acc_m_s2[2])>4.5f&&(is_att_valid == 2)&&(first_time==1)){
+			/**************************prepare acceleration data **********************/
+			memcpy(acc_imu_m_s2,g_sensor_scaled_body.acc_m_s2,sizeof(acc_imu_m_s2));
+				
+			/***************integrated navigation: time update*************************/
+			ekf7_tu(acc_imu_m_s2, pos_prev,vel_prev,quat,g_timediff_s_gps, P, Q, pos_temp, vel_temp,stateVec);
 	
-		/***************integrated navigation: GPS measurement update*************************/
-		//get gps data
-		gpsdata_flag = get_gps_data(&init_flag);	
-		if((init_flag==0)&&(gpsdata_flag==1)&&(GPS_DATA.hAcc_m<10)&&(GPS_DATA.valid ==1)){   //初始化完成后
-			ekf7_gps6_mu(pos_temp, vel_temp, &eul_rad[0],stateVec,P, pos_lla_init,&GPS_DATA);
-		}
+			/***************integrated navigation: GPS measurement update*************************/
+			gpsdata_flag = get_gps_data(&init_flag);	
+			if((init_flag==0)&&(gpsdata_flag==1)&&(GPS_DATA.hAcc_m<10)&&(GPS_DATA.valid ==1)){   //初始化完成后
+				ekf7_gps6_mu(pos_temp, vel_temp, &eul_rad[0],stateVec,P, pos_lla_init,&GPS_DATA);
+			}
 			
-		/***************integrated navigation: Odometer measurement update********************/
-		odom_preprocessing(&odom_valid,&delta_odo_l,&delta_odo_r);
+			/***************integrated navigation: Odometer measurement update********************/
+			odom_preprocessing(&odom_valid,&delta_odo_l,&delta_odo_r);
+			if(odom_valid==1){
+				ekf7_odom_mu(pos_prev,vel_prev,&eul_rad[0], stateVec, delta_odo_r,delta_odo_l,P,R_odom,WHEEL_BASE,pos_temp,  vel_temp);
+				is_odo_ready = 1;
+			}
+		
+			//trapping detect
+			trapped_flag = trapping_detect(pos_temp);
 
-		if(odom_valid==1){
-			ekf7_odom_mu( pos_prev,vel_prev,&eul_rad[0], stateVec, delta_odo_r,delta_odo_l,P, R_temp,R_odom,WHEEL_BASE,pos_temp,  vel_temp);
-			is_odo_ready = 1;
+			//copy pos/vel to pos/vel previous for next iteration
+			update_iter(pos_prev,vel_prev,pos_ned_m,vel_ned_m_s,pos_temp,vel_temp);
+			
+			//update eul and fusion updated quat into rotation vector   //!!!!!!!!!!!11shoule move into update functions later
+			eul2quatf(eul_rad,quat);
+			rot_update(quat,rot_vec);
+		
+			//temperory data send function
+			//level = rt_hw_interrupt_disable();
+			rt_enter_critical();
+			send_data(g_timediff_s_gps,delta_odo_l,delta_odo_r,GPS_DATA);
+			
+			//send_data_chc(g_timediff_s_gps,delta_odo_l,delta_odo_r,GPS_DATA);
+			//send_data_test1();    //有数据头，发送自然数序列		
+			//send_data_test2();    //无数据头，间隔发送0和1
+			rt_exit_critical();
 		}
-			
-		//ekf7_odom_mu( pos_prev,vel_prev,&eul_rad[0], stateVec, delta_odo_r,delta_odo_l,P, R_odom,WHEEL_BASE,pos_temp,  vel_temp);
-		//is_odo_ready = 1;
-		
-		//trapping detect
-		trapped_flag = trapping_detect(pos_temp);
-
-    //copy pos/vel to pos/vel previous for next iteration
-		update_iter(pos_prev,vel_prev,pos_ned_m,vel_ned_m_s,pos_temp,vel_temp);
-			
-    //update eul and fusion updated quat into rotation vector   //!!!!!!!!!!!11shoule move into update functions later
-    //quat2eulf(quat, eul_rad);
-    //rot_update(quat,rot_vec);
-		
-		//temperory data send function
-		send_data(g_timediff_s_gps,delta_odo_l,delta_odo_r,GPS_DATA);
-		
-	}	
-    //rt_exit_critical();
-	//rt_thread_delay(200);// 200ms 钟执行一次此线程
-   }
-	
+		if(first_time==0) first_time=1;
+		rt_thread_delay(100);// 
+		}
 }

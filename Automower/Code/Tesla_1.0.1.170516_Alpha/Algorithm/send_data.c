@@ -6,8 +6,8 @@
 #include "usart.h"
 #include "encoder.h"
 #include "debug.h"
-
 #include "global_planner.h"
+#include "conv_enc.h"
 
 void  send_data_imu(float g_timediff_s_imu,imu_scaled_body *imu)
 {
@@ -153,20 +153,19 @@ void  send_data_globalplanner(float g_timediff_s_imu,float acc_imu_m_s2[3],float
 
 }
 */
-void send_data(float g_timediff_s_gps,float delta_odo_l,float delta_odo_r,gpsx gps_data)
+void send_data(float dt,float delta_odo_l,float delta_odo_r,gpsx gps_data)
 {
 	char send_buf[200];
 	char *temp;
 	float acc_imu_m_s2[3];
 	float gyro_rps[3];
-	volatile u8 k = 0;
-  u8 len = 0;
+	u8 k = 0;
+    u8 len = 0;
 	float checkbit=0;
 	
 	//get data ready
 	memcpy(acc_imu_m_s2,g_sensor_scaled_body.acc_m_s2,sizeof(acc_imu_m_s2));
 	memcpy(gyro_rps,g_sensor_scaled_body.gyro_rps,sizeof(gyro_rps));
-
 	
 	send_buf[k] = 0xB5;k++;
 	send_buf[k] = 0x62;k++;
@@ -240,7 +239,7 @@ void send_data(float g_timediff_s_gps,float delta_odo_l,float delta_odo_r,gpsx g
 	send_buf[k] = temp[2];k++;
 	send_buf[k] = temp[3];k++;
 
-	temp = (char *)(&g_timediff_s_gps);
+	temp = (char *)(&dt);
 	send_buf[k] = temp[0];k++;
 	send_buf[k] = temp[1];k++;
 	send_buf[k] = temp[2];k++;
@@ -388,4 +387,102 @@ void send_data(float g_timediff_s_gps,float delta_odo_l,float delta_odo_r,gpsx g
 	
 	//call rt data send function
 	rt_debug(send_buf,k);
+}
+
+
+/*******²âÊÔ´®¿ÚÍ¨Ñ¶£ºÊý¾ÝÍ·0xB562, Êý¾ÝÎ»£º´Ó3-118µÄ×ÔÈ»Êý***********/
+void send_data_test1(void)
+{
+	#define len  100
+	char send_buf[len];
+  u8 k = 0;
+	
+	send_buf[0] = 0xB5;
+	send_buf[1] = 0x62;
+	for(k=2;k<len;k++)
+		send_buf[k] = k+1;
+
+	//call rt data send function
+	rt_debug(send_buf,len);
+}
+
+/*******²âÊÔ´®¿ÚÍ¨Ñ¶£ºÊý¾ÝÍ·0xB562, Êý¾ÝÎ»:0ºÍ1¼ä¸ôý***********/
+void send_data_test2(void)
+{
+	char send_buf2[100]={0};
+	u8 i;
+	
+  for(i=0;i<100;i++){
+		if(i%2) send_buf2[i]=1;
+	}
+
+	//call rt data send function
+	rt_debug(send_buf2,100);
+}
+
+
+void send_data_chc(float g_timediff_s_gps,float delta_odo_l,float delta_odo_r,gpsx gps_data)
+{
+	float send_buf[50];
+	float acc_imu_m_s2[3];
+	float gyro_rps[3];
+	char head[2];
+	u8 k = 0,i;
+  
+	head[0] = 0xB5;
+	head[1] = 0x62;
+	
+	//get data ready
+	memcpy(acc_imu_m_s2,g_sensor_scaled_body.acc_m_s2,sizeof(acc_imu_m_s2));
+	memcpy(gyro_rps,g_sensor_scaled_body.gyro_rps,sizeof(gyro_rps));
+
+	rt_debug(head,2);
+//	send_buf[k] = pos_ned_m[0];k++;
+//	send_buf[k] = pos_ned_m[1];k++;
+//	send_buf[k] = pos_ned_m[2];k++;
+	send_buf[k] = acc_imu_m_s2[0];k++;
+	send_buf[k] = acc_imu_m_s2[1];k++;
+	send_buf[k] = acc_imu_m_s2[2];k++;
+//	send_buf[k] = delta_odo_l;k++;
+//	send_buf[k] = delta_odo_r;k++;
+//	send_buf[k] = quat[0];k++;
+//	send_buf[k] = quat[1];k++;
+//	send_buf[k] = quat[2];k++;
+//	send_buf[k] = quat[3];k++;
+	send_buf[k] = g_timediff_s_gps;k++;
+	send_buf[k] = gyro_rps[0];k++;
+	send_buf[k] = gyro_rps[1];k++;
+	send_buf[k] = gyro_rps[2];k++;
+
+//  temp = (char *)(&gps_data.latitude_rad);
+//	
+//	temp = (char *)(&gps_data.longitude_rad);
+
+
+//	temp = (char *)(&gps_data.hMSL_m);
+//	
+//	temp = (char *)(&gps_data.velN_m_s);
+//	
+//	temp = (char *)(&gps_data.velE_m_s);
+//	
+//	temp = (char *)(&gps_data.velD_m_s);
+//	
+//	temp = (char *)(&gps_data.hAcc_m);
+//	
+//	temp = (char *)(&gps_data.vAcc_m);
+
+//  temp = (char *)(&gps_data.sAcc_m_s);
+
+
+//  temp = (char *)(&vel_ned_m_s[0]);
+
+//	temp = (char *)(&vel_ned_m_s[1]);
+
+//	temp = (char *)(&vel_ned_m_s[2]);
+
+
+	for(i=0;i<k;i++){
+	   //operate convutional channel encoding and serial send
+		conv_enc_tx(send_buf[i]);
+	}
 }

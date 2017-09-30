@@ -31,7 +31,7 @@ static rt_device_t debug_device = RT_NULL;
  */
 void rt_debug(const char *buf,rt_size_t length)
 {
-    static char rt_log_buf[100];
+  static char rt_log_buf[200];
 	int i = 0;
 
 	for(i = 0; i < length; i++)
@@ -48,11 +48,10 @@ void rt_debug(const char *buf,rt_size_t length)
     }
     else
     {
-        rt_uint16_t old_flag = debug_device->flag;
-
-        debug_device->flag |= RT_DEVICE_FLAG_STREAM;
+        rt_uint16_t old_flag = debug_device->open_flag;
+        debug_device->open_flag &= (~RT_DEVICE_FLAG_STREAM);
         rt_device_write(debug_device, 0, rt_log_buf, length);
-        debug_device->flag = old_flag;
+        debug_device->open_flag = old_flag;
     }
 #else
     rt_hw_console_output(rt_log_buf);

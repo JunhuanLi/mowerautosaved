@@ -24,10 +24,10 @@
 
 #include "usart_driver.h"
 #include "motion_imu.h"
-
+#include "global_planner.h"
 /* macros *********************************************************************/
+#define TEST_LEN 10.0f
 
-/*vehicle info*/
 float Rl = 0.0915; //meter
 float Rr = 0.0915; //meter
 float l = 0.35; //meter
@@ -35,77 +35,98 @@ float omega_max = 6.98; //maximum angluar velocity 3000/45(rpm) == 6.98(rad/s)
 
 /*Temp Mag**********************************************************************/
 /*Mag Sensor*/
+T_frontBumper g_Bumper;
+T_trigger g_trigger;
 
+
+T_motion motion;
+T_action g_action;
+T_params_act g_action_params;
 MAG_STATUE mag_state;
+const unsigned char MAG_CNT = 3;
 void mag_sensor_initial(void)
 {
-	mag_state.left_sensor_former = 0;
-	mag_state.right_sensor_former = 0;
+	unsigned char i = 0;
+	
 	mag_state.left_sensor_now = 0;
 	mag_state.right_sensor_now = 0;
+	
 	mag_state.left_sensor_change = 0;
 	mag_state.right_sensor_change = 0;
 	
-	mag_state.left_sensor_old = 0;
-	mag_state.right_sensor_old = 0;
+	for(i = 0; i < MAG_CNT; i++)
+	{
+		mag_state.left_sensor_old[i] = 0;
+		mag_state.right_sensor_old[i] = 0;
+	}
 	
 }
+
 void mag_sensor_update(void)
 {
-	if((UART_RX_BUFFER[4] == 0x01)&&(UART_RX_BUFFER[0] == 0xAA)&&((UART_RX_BUFFER[1] == 0xBB)))
+	unsigned char i  = 0;
+	
+	if((leftsensor_data > 0)&&(UART_RX_BUFFER[0] == 0xAA)&&((UART_RX_BUFFER[1] == 0xBB)))
 	{
 		mag_state.left_sensor_now = MOTION_MAG_LINE_INSIDE;
 	}
-	else if((UART_RX_BUFFER[4] == 0x02)&&(UART_RX_BUFFER[0] == 0xAA)&&((UART_RX_BUFFER[1] == 0xBB)))
+	else if((leftsensor_data < 0)&&(UART_RX_BUFFER[0] == 0xAA)&&((UART_RX_BUFFER[1] == 0xBB)))
 	{
 		mag_state.left_sensor_now = MOTION_MAG_LINE_OUTSIDE;
 	}
 	else
 	{
-		mag_state.left_sensor_now = MOTION_MAG_LINE_MISSING;
+		//mag_state.left_sensor_now = MOTION_MAG_LINE_OUTSIDE;
+		//mag_state.left_sensor_now = MOTION_MAG_LINE_MISSING;
 	}
 	
-	if((UART_RX_BUFFER[5] == 0x01)&&(UART_RX_BUFFER[0] == 0xAA)&&((UART_RX_BUFFER[1] == 0xBB)))
+	if((rightsensor_data > 0)&&(UART_RX_BUFFER[0] == 0xAA)&&((UART_RX_BUFFER[1] == 0xBB)))
 	{
 		mag_state.right_sensor_now = MOTION_MAG_LINE_INSIDE;
 	}
-	else if((UART_RX_BUFFER[5] == 0x02)&&(UART_RX_BUFFER[0] == 0xAA)&&((UART_RX_BUFFER[1] == 0xBB)))
+	else if((rightsensor_data < 0)&&(UART_RX_BUFFER[0] == 0xAA)&&((UART_RX_BUFFER[1] == 0xBB)))
 	{
 		mag_state.right_sensor_now = MOTION_MAG_LINE_OUTSIDE;
 	}
 	else
 	{
-		mag_state.right_sensor_now = MOTION_MAG_LINE_MISSING;
+		//mag_state.right_sensor_now = MOTION_MAG_LINE_OUTSIDE;
+		//mag_state.right_sensor_now = MOTION_MAG_LINE_MISSING;
 	}
+	
 	/*
-	if((mag_state.right_sensor_former != mag_state.right_sensor_now)&&(mag_state.left_sensor_former != MOTION_MAG_LINE_MISSING)&&(mag_state.left_sensor_now != MOTION_MAG_LINE_MISSING))
+	if((mag_state.right_sensor_now == MOTION_MAG_LINE_OUTSIDE)&&(mag_state.left_sensor_now == MOTION_MAG_LINE_OUTSIDE))
 	{
-		mag_state.right_sensor_change =	1;
-	}
-	if((mag_state.left_sensor_former != mag_state.left_sensor_now)&&(mag_state.left_sensor_former != MOTION_MAG_LINE_MISSING)&&(mag_state.left_sensor_now != MOTION_MAG_LINE_MISSING))
-	{
-		mag_state.left_sensor_change =	1;
+		if((mag_state.right_sensor_old[0] == MOTION_MAG_LINE_OUTSIDE)&&(mag_state.right_sensor_old[1] == MOTION_MAG_LINE_OUTSIDE)&& (mag_state.right_sensor_old[2] == MOTION_MAG_LINE_OUTSIDE) )//&&(mag_state.right_sensor_old[3] == MOTION_MAG_LINE_OUTSIDE))//&&(mag_state.right_sensor_old[4] == MOTION_MAG_LINE_OUTSIDE))
+		{
+			mag_state.right_sensor_change = 1;
+		}
+		if((mag_state.left_sensor_old[0] == MOTION_MAG_LINE_OUTSIDE)&&(mag_state.left_sensor_old[1] == MOTION_MAG_LINE_OUTSIDE)&&(mag_state.left_sensor_old[2] == MOTION_MAG_LINE_OUTSIDE))//&&(mag_state.left_sensor_old[3] == MOTION_MAG_LINE_OUTSIDE))//&&(mag_state.left_sensor_old[4] == MOTION_MAG_LINE_OUTSIDE))
+		{
+			mag_state.left_sensor_change = 1;
+		}
 	}
 	*/
-	
-	if((mag_state.right_sensor_now == MOTION_MAG_LINE_OUTSIDE)&&(mag_state.right_sensor_former == MOTION_MAG_LINE_OUTSIDE)&&(mag_state.right_sensor_old == MOTION_MAG_LINE_OUTSIDE))
+	if((mag_state.right_sensor_now == MOTION_MAG_LINE_OUTSIDE)&&(mag_state.left_sensor_now == MOTION_MAG_LINE_OUTSIDE))
 	{
 		mag_state.right_sensor_change = 1;
-	}
-	if((mag_state.left_sensor_now == MOTION_MAG_LINE_OUTSIDE)&&(mag_state.left_sensor_former == MOTION_MAG_LINE_OUTSIDE)&&(mag_state.left_sensor_old == MOTION_MAG_LINE_OUTSIDE))
-	{
 		mag_state.left_sensor_change = 1;
 	}
 	
-	mag_state.right_sensor_old = mag_state.right_sensor_former;
-	mag_state.left_sensor_old = mag_state.left_sensor_former;
-	mag_state.right_sensor_former = mag_state.right_sensor_now;
-	mag_state.left_sensor_former = mag_state.left_sensor_now;
+	
+	for(i = 0; i < MAG_CNT; i++)
+	{
+		mag_state.right_sensor_old[i] = mag_state.right_sensor_old[i+1];
+		mag_state.left_sensor_old[i] = mag_state.left_sensor_old[i+1];
+	}
+	mag_state.right_sensor_old[MAG_CNT-1] = mag_state.right_sensor_now;
+	mag_state.left_sensor_old[MAG_CNT-1] = mag_state.left_sensor_now;
 }
 /*Temp end*********************************************************************/
 
 
 /* static variables ***********************************************************/
+
 static __inline void Motion_Norm_2D(float* x, float* y)
 {
 	float length = sqrtf((*x)*(*x) + (*y)*(*y));
@@ -120,69 +141,60 @@ static __inline void Motion_Norm_2D(float* x, float* y)
 extern T_motion motion;
 extern T_action g_action;
 extern T_params_act g_action_params;
+*/
 //弓字形测试程序
+unsigned short zigzag_flag = 0;
 static void Cover(T_motion* motion)
 {
-	zigzag_flag++;
-	if(motion->zigzag.state == T_MOTION_ZIGZAG_STATE_IDLE)
-	{
-		rt_kprintf("Waiting orders! \n");
-		return;
-	}
 	
-	else if(motion->zigzag.state == T_MOTION_ZIGZAG_STATE_LINE)
+
+	if(motion->zigzag.state == T_MOTION_ZIGZAG_STATE_LINE)
 	{
 		mag_sensor_update();
-		if( (!motion.tracker.path_imu.pointReached) )
-		{
-			trackPoint(&motion.tracker,g_action_params.u_turn_.fin_vec[0],
-										g_action_params.u_turn_.fin_vec[1]); //take action_out params_out later
-		}
-		else
-		{
-			//达到指定点，非法，待处理
-		}	
-		if((mag_state.left_sensor_change == 1)&&(mag_state.right_sensor_change == 1)&&(zigzag_flag > 100))
+		zigzag_flag++;
+		
+		if((mag_state.left_sensor_change == 1)&&(mag_state.right_sensor_change == 1)&&(zigzag_flag>100))
 		{
 			motion->zigzag.state = T_MOTION_ZIGZAG_STATE_TURN;
-			mag_state.right_sensor_change = 0;
-			mag_state.left_sensor_change = 0;
 			zigzag_flag = 0;
-			
-			motion.tracker.path_imu.pointReached = FALSE;
-			stop(&motion.tracker);
+		
+			//motion->tracker.path_imu.pointReached = FALSE;
+			stop(&motion->tracker);
 			g_trigger = WIRE_SENSED;
 			make_decision(&g_trigger, &g_action, &g_action_params);
 		}
+		else
+			trackPoint(&motion->tracker,g_action_params.u_turn_.fin_vec[0], g_action_params.u_turn_.fin_vec[1] );		
+		
+		mag_state.right_sensor_change = 0;
+		mag_state.left_sensor_change = 0;
 	}
 	else if(motion->zigzag.state == T_MOTION_ZIGZAG_STATE_TURN)
 	{
-		if(!motion.tracker.path_imu.rotationFinished)
+		zigzag_flag=0;
+		if(!motion->tracker.path_imu.rotationFinished)
 		{
-			rotateAngle(&motion.tracker, g_action_params.u_turn_.fin_vec[0],
-										g_action_params.u_turn_.fin_vec[1] , g_action_params.u_turn_.turn_side);
+			rotateAngle(&motion->tracker, g_action_params.u_turn_.fin_vec[0], g_action_params.u_turn_.fin_vec[1] , g_action_params.u_turn_.turn_side);
 			
-			motion.tracker.line_vel = 0.04;//横向位移一个车身宽度时，线速度为0.08m/s
+			motion->tracker.line_vel = 0.05;//横向位移一个车身宽度时，线速度为0.08m/s
 			
 		}
 		else
 		{
-			motion.tracker.path_imu.rotationFinished = FALSE;
+			motion->tracker.path_imu.rotationFinished = FALSE;
 			motion->zigzag.state = T_MOTION_ZIGZAG_STATE_LINE;
-			stop(&motion.tracker);
-			
-			
-			//此处无trigger，待确认？
-			
+			stop(&motion->tracker);
+			//mag_state.right_sensor_change = 0;
+			//mag_state.left_sensor_change = 0;
 			
 		}
+			
 	}
 }
-*/
-unsigned short zigzag_flag = 0;
+
+
 static void Motion_Run_Zigzag(T_motion* motion)
 {
-	zigzag_flag++;
 	if(motion->zigzag.state == T_MOTION_ZIGZAG_STATE_IDLE)
 	{
 		rt_kprintf("Waiting orders! \n");
@@ -190,12 +202,17 @@ static void Motion_Run_Zigzag(T_motion* motion)
 	}
 	else if(motion->zigzag.state == T_MOTION_ZIGZAG_STATE_LINE)
 	{
+		float dot_product = (motion->tracker.sense.dir_x* motion->zigzag.heading_x)+(motion->tracker.sense.dir_y* motion->zigzag.heading_y);
 		//运行位姿控制器
-		//Motion_Update_2D_Line(&motion->tracker, TEST_LEN, 0.0f, direction[0].x, direction[0].y, 0.2f);
+		//Motion_Update_2D_Line(&motion->tracker, TEST_LEN, 0.0f, direction[0].x, direction[0].y, 0.1);
 		Motion_Run_Tracker(&motion->tracker);
 		
 		mag_sensor_update();
-		if((mag_state.left_sensor_change == 1)&&(mag_state.right_sensor_change == 1)&&(zigzag_flag > 100))
+		zigzag_flag++;
+
+		
+
+		if((mag_state.left_sensor_change == 1)&&(mag_state.right_sensor_change == 1)&&(zigzag_flag > 150)&&(dot_product > 0.96))
 		{
 			motion->zigzag.state = T_MOTION_ZIGZAG_STATE_TURN;
 			
@@ -203,22 +220,15 @@ static void Motion_Run_Zigzag(T_motion* motion)
 			mag_state.left_sensor_change = 0;
 			
 			zigzag_flag = 0;
+			
+			g_trigger = WIRE_SENSED;
+			make_decision(&g_trigger, &g_action, &g_action_params);
 		}
-		//判断是否碰撞
-		/*
-		if(motion->tracker.sense.bump_l || motion->tracker.sense.bump_r)
+		if( ( mag_state.left_sensor_change == 0) && (mag_state.right_sensor_change == 0) )
 		{
-			motion->zigzag.state = T_MOTION_ZIGZAG_STATE_TURN;
+			//motion->zigzag.heading_x = motion->tracker.sense.dir_x;
+			//motion->zigzag.heading_y = motion->tracker.sense.dir_y;
 		}
-		
-		//判断是否跨线
-		if(motion->tracker.sense.side_l == MOTION_MAG_LINE_OUTSIDE 
-			&& motion->tracker.sense.side_r == MOTION_MAG_LINE_OUTSIDE)
-		{
-			motion->zigzag.state = T_MOTION_ZIGZAG_STATE_TURN;
-		}
-		*/
-		
 	}
 	//掉头部分
 	else if(motion->zigzag.state == T_MOTION_ZIGZAG_STATE_TURN)
@@ -230,6 +240,20 @@ static void Motion_Run_Zigzag(T_motion* motion)
 		
 		zigzag_flag = 0;
 		//计算线速度和角速度
+				
+		if(g_action_params.u_turn_.turn_side == RIGHT_STEERING) 
+				{
+					motion->zigzag.turn_dir = T_MOTION_ZIGZAG_TURN_CLOCKWISE; //turn right
+				}
+				else if(g_action_params.u_turn_.turn_side == LEFT_STEERING) 
+				{
+					motion->zigzag.turn_dir = T_MOTION_ZIGZAG_TURN_COUNTERCLOCKWISE; // turn left
+				}
+				else
+				{
+					motion->zigzag.turn_dir = motion->zigzag.turn_dir;
+				}		
+				
 		if(motion->zigzag.turn_dir == T_MOTION_ZIGZAG_TURN_COUNTERCLOCKWISE)
 		{
 			motion->tracker.line_vel = motion->zigzag.target_vel;
@@ -245,28 +269,8 @@ static void Motion_Run_Zigzag(T_motion* motion)
 		
 		//利用点乘判断是否完成掉头 之后计算下一阶段参数
 
-		/*if(motion->zigzag.f_r == T_MOTION_ZIGZAG_GO_FOWARD)
-		{
-			if(dot_product < -0.96f) //~170degree
-			{
-				//motion->zigzag.state = T_MOTION_ZIGZAG_STATE_LINE;
-				motion->tracker.angular_vel = 0;
-				motion->tracker.line_vel = 0;
-			}
-			//Tracking_Start_2D_Angle(&motion->tracker,-motion->zigzag.heading_x,-motion->zigzag.heading_y,motion->zigzag.target_vel);
-		}
-		else
-		{
-			if(dot_product > 0.96f)
-			{
-				//motion->zigzag.state = T_MOTION_ZIGZAG_STATE_LINE;
-				motion->tracker.angular_vel = 0;
-				motion->tracker.line_vel = 0;
-			}
-			//Tracking_Start_2D_Angle(&motion->tracker,motion->zigzag.heading_x,motion->zigzag.heading_y,motion->zigzag.target_vel);
-		}*/
 
-		if( (dot_product) < -0.96f)  //~170degree
+		if( (dot_product) < -0.985f)  //~170degree
 			{
 				//turn finished, need to toggle the next turn direction
 				/*
@@ -280,10 +284,13 @@ static void Motion_Run_Zigzag(T_motion* motion)
 				motion->tracker.line_vel = 0;
 				
 				
-				if(motion->zigzag.turn_dir == T_MOTION_ZIGZAG_TURN_COUNTERCLOCKWISE) motion->zigzag.turn_dir = T_MOTION_ZIGZAG_TURN_CLOCKWISE;
-				if(motion->zigzag.turn_dir == T_MOTION_ZIGZAG_TURN_CLOCKWISE) motion->zigzag.turn_dir = T_MOTION_ZIGZAG_TURN_COUNTERCLOCKWISE;
+				
+				//if(motion->zigzag.turn_dir == T_MOTION_ZIGZAG_TURN_COUNTERCLOCKWISE) motion->zigzag.turn_dir = T_MOTION_ZIGZAG_TURN_CLOCKWISE;
+				//if(motion->zigzag.turn_dir == T_MOTION_ZIGZAG_TURN_CLOCKWISE) motion->zigzag.turn_dir = T_MOTION_ZIGZAG_TURN_COUNTERCLOCKWISE;
+
 				motion->zigzag.heading_x = -motion->zigzag.heading_x;
-				Motion_Update_2D_Line(&motion->tracker,(motion->zigzag.heading_x) * 200, 0,(motion->zigzag.heading_x),0, 0.1f);
+				//motion->tracker.sense.dir_x = (- motion->tracker.sense.dir_x);
+				Motion_Update_2D_Line(&motion->tracker, (motion->zigzag.heading_x) * 200, 0, (motion->zigzag.heading_x),0, 500.0f);
 
 			}
 			
@@ -298,6 +305,18 @@ static void Motion_Run_Zigzag(T_motion* motion)
 
 }
 /* funcitons ******************************************************************/
+void Motion_Start_2D_Angle(T_motion_tracker* obj,float dir_x,float dir_y,float vel)
+{
+	Motion_Norm_2D(&dir_x,&dir_y);
+	obj->tracking														= MOTION_TRACKING_2D_ANGLE;
+	obj->path_imu.dir_x 										= dir_x;
+	obj->path_imu.dir_y 										= dir_y;	
+	obj->path_imu.dir_x_adj									= dir_x;
+	obj->path_imu.dir_y_adj									= dir_y;
+	obj->command_vel 												= vel;
+	obj->target_vel													= vel;
+//	obj->path_imu.direction_pi.integral			= 0;
+}
 void Motion_Init(T_motion* motion,uint8_t en)
 {
 	set_motor_control_type(MOTOR_CONTROL_TYPE_SPEED);
@@ -315,7 +334,7 @@ void Motion_Init(T_motion* motion,uint8_t en)
 	//obj->sensor.mag_polarity = 1;
 	
 	Motion_Set_Path_Param(&motion->tracker,0.4);
-	Motion_Set_cornerAngle_Param(&motion->tracker,0.005,0.000055f,0.2);
+	Motion_Set_cornerAngle_Param(&motion->tracker,0.01,0.001f,0.2);
 	Motion_Set_lineAngle_Param(&motion->tracker,0.005, 0.001f,0.1);
 	Motion_Set_Mag_Tracking_Param(&motion->tracker,0,0,0);
 	Motion_Set_Mag_Gotoline_Param(&motion->tracker,0,0,0);
@@ -329,10 +348,10 @@ void Motion_Init(T_motion* motion,uint8_t en)
 
 void Motion_Run(T_motion* motion)
 {
-	if(motion->motion_state == MOTION_STATE_ZIGZAG)
-	{
-		Motion_Run_Zigzag(motion);
-	}
+
+		//Motion_Run_Zigzag(motion);
+		Cover(motion);
+
 	
 
 }
@@ -358,51 +377,52 @@ void Motion_Process_Obstacle(T_motion* motion)
 
 void Motion_Process_Motor_Speed(T_motion* motion)
 {
-	
+    
 	float omega_leftWheel =  1/Rl * motion->tracker.line_vel + l/(2*Rl) * motion->tracker.angular_vel;
 	float omega_rightWheel = 1/Rr * motion->tracker.line_vel - l/(2*Rr) * motion->tracker.angular_vel;
+	float omega_dr_leftWheel=0.0;
+	float omega_dr_rightWheel=0.0;
 	
 	//Run Accellation
-	if(motion->tracker.omega_leftWheel < omega_leftWheel)
-	{
-		motion->tracker.omega_leftWheel += motion->tracker.acc;
-		if(motion->tracker.omega_leftWheel > omega_leftWheel)
-		{
-			motion->tracker.omega_leftWheel = omega_leftWheel;
-		}
-	}
-	else if(motion->tracker.omega_leftWheel > omega_leftWheel)
-	{
-		motion->tracker.omega_leftWheel -= motion->tracker.acc;
-		if(motion->tracker.omega_leftWheel < omega_leftWheel)
-		{
-			motion->tracker.omega_leftWheel = omega_leftWheel;
-		}
-	}
-	
-	if(motion->tracker.omega_rightWheel < omega_rightWheel)
-	{
-		motion->tracker.omega_rightWheel += motion->tracker.acc;
-		if(motion->tracker.omega_rightWheel > omega_rightWheel)
-		{
-			motion->tracker.omega_rightWheel = omega_rightWheel;
-		}
-	}
-	else if(motion->tracker.omega_rightWheel > omega_rightWheel)
-	{
-		motion->tracker.omega_rightWheel -= motion->tracker.acc;
-		if(motion->tracker.omega_rightWheel < omega_rightWheel)
-		{
-			motion->tracker.omega_rightWheel = omega_rightWheel;
-		}
-	}
-	
+//	if(motion->tracker.omega_leftWheel < omega_leftWheel)
+//	{
+//		motion->tracker.omega_leftWheel += motion->tracker.acc;
+//		if(motion->tracker.omega_leftWheel > omega_leftWheel)
+//		{
+//			motion->tracker.omega_leftWheel = omega_leftWheel;
+//		}
+//	}
+//	else if(motion->tracker.omega_leftWheel > omega_leftWheel)
+//	{
+//		motion->tracker.omega_leftWheel -= motion->tracker.acc;
+//		if(motion->tracker.omega_leftWheel < omega_leftWheel)
+//		{
+//			motion->tracker.omega_leftWheel = omega_leftWheel;
+//		}
+//	}
+//	
+//	if(motion->tracker.omega_rightWheel < omega_rightWheel)
+//	{
+//		motion->tracker.omega_rightWheel += motion->tracker.acc;
+//		if(motion->tracker.omega_rightWheel > omega_rightWheel)
+//		{
+//			motion->tracker.omega_rightWheel = omega_rightWheel;
+//		}
+//	}
+//	else if(motion->tracker.omega_rightWheel > omega_rightWheel)
+//	{
+//		motion->tracker.omega_rightWheel -= motion->tracker.acc;
+//		if(motion->tracker.omega_rightWheel < omega_rightWheel)
+//		{
+//			motion->tracker.omega_rightWheel = omega_rightWheel;
+//		}
+//	}
+//	
 		
-	float omega_dr_leftWheel = 3600 * motion->tracker.omega_leftWheel/omega_max; // dr == dutyratio
-	float omega_dr_rightWheel = 3600 * motion->tracker.omega_rightWheel/omega_max;
+	omega_dr_leftWheel = 3600 * omega_leftWheel/omega_max; // dr == dutyratio
+	omega_dr_rightWheel = 3600 * omega_rightWheel/omega_max;
 	//Set Speed
 	set_motor_control_speed_s32(omega_dr_leftWheel,omega_dr_rightWheel);
-	//set_motor_control_speed_s32(vl,vr);
 }
 
 
@@ -417,6 +437,24 @@ void Motion_Zigzag_Init(T_motion* motion,float blade_bodywidth_ratio,float blade
 
 void Motion_Zigzag_Update(T_motion* motion,float speed,float heading_x,float heading_y,T_motion_zigzag_turn_dir_type turn_dir)
 {
+	float x = 																	heading_x;
+	float y =                             			heading_y;
+
+	Motion_Norm_2D(&x,&y);
+	
+	motion->zigzag.heading_x = 									x;
+	motion->zigzag.heading_y = 									y;
+	motion->zigzag.turn_dir = 									turn_dir;
+	motion->zigzag.f_r = 												T_MOTION_ZIGZAG_GO_FOWARD;
+	motion->zigzag.target_vel = 								speed;
+	motion->motion_state = 											MOTION_STATE_ZIGZAG;
+	
+	//Motion_Update_2D_Angle(&motion->tracker, motion->zigzag.heading_x, motion->zigzag.heading_y, motion->zigzag.target_vel);
+}
+
+
+void Motion_Zigzag_Start(T_motion* motion,float speed,float heading_x,float heading_y,T_motion_zigzag_turn_dir_type turn_dir)
+{
 	float x = heading_x,y = heading_y;
 
 	Motion_Norm_2D(&x,&y);
@@ -429,5 +467,5 @@ void Motion_Zigzag_Update(T_motion* motion,float speed,float heading_x,float hea
 	motion->zigzag.state = 									T_MOTION_ZIGZAG_STATE_LINE;
 	motion->motion_state = 									MOTION_STATE_ZIGZAG;
 	
-	Motion_Update_2D_Angle(&motion->tracker,motion->zigzag.heading_x,motion->zigzag.heading_y,motion->zigzag.target_vel);
+	Motion_Start_2D_Angle(&motion->tracker,motion->zigzag.heading_x,motion->zigzag.heading_y,motion->zigzag.target_vel);
 }

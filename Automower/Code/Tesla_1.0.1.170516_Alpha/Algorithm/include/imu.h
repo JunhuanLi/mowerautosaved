@@ -27,6 +27,7 @@
 #include "math.h"
 #include "normK.h"
 #include "imu_processing.h"
+#include "time_control.h"
 
 
 /*********struct************/
@@ -40,9 +41,6 @@ void  att_tu(float P[16], float quatl[4], imu_scaled_body *imu,float dt, float Q
 void  att_tu_20602(float P[16], float quatl[4], imu_scaled_body *imu,float dt, float Q[9]);
 float att_mu_mag(float *P, float yaw_mag_prev, float yaw_mag, float R, float Q);
 void  send_data_imu(float g_timediff_s,imu_scaled_body *imu);
-
-//double magHeading2Geog(double points[3]);
-
 
 #endif
 /* Copyright (C), 2017, TOPBAND Robot Team ************************************/

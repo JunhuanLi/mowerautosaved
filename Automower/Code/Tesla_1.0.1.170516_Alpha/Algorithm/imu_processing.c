@@ -169,7 +169,8 @@ void hampel_imu(imu_scaled_body *imu)
 //		imu->acc_m_s2[1] = hampel(acc_qy);    imu->acc_m_s2_20602[1] = hampel(acc_qy_20602);
 //		imu->acc_m_s2[2] = hampel(acc_qz);    imu->acc_m_s2_20602[2] = hampel(acc_qz_20602);
 //	}
-//	
+	//??????????????
+	
 	if(mag2_qx[0]!=0){
 		imu->mag2[0] = hampel(mag2_qx);
 //		imu->mag2[1] = hampel(mag2_qy);
@@ -219,7 +220,7 @@ void rot_ele_update(float quat_in[4],float eul_in[3],volatile float delta_yaw)
 
 void update_yaw1_mag(float yaw,float *yaw1_mag)
 {
-	*yaw1_mag = yaw;
+	  *yaw1_mag = yaw;
 }
 
 
@@ -244,7 +245,6 @@ void filter_converge(float trace_P,float *delta_yaw,float eul_temp[3])
 			is_att_valid = 1;
 		}
 		
-		//is_att_valid = 2?,????????
 		if(is_att_valid == 1){
 			if(cnt<filter_conv_len)  cnt++;
 			if(cnt==filter_conv_len){
@@ -287,12 +287,6 @@ u8 imu_validation(void)
 		imu.gyro_rps[0] = (float)mpu.gx/GYRO_FACTOR_20602*PI/180;
 		imu.gyro_rps[1] = (float)mpu.gy/GYRO_FACTOR_20602*PI/180;
 		imu.gyro_rps[2] = (float)mpu.gz/GYRO_FACTOR_20602*PI/180;
-		
-		//???参数待调 取出静态gyro的误差范围
-		if(imu.gyro_rps[0] < 0.008 && imu.gyro_rps[0] > -0.008) imu.gyro_rps[0] = 0.0;
-		if(imu.gyro_rps[1] < 0.008 && imu.gyro_rps[1] > -0.008) imu.gyro_rps[1] = 0.0;
-		if(imu.gyro_rps[2] < 0.008 && imu.gyro_rps[2] > -0.008) imu.gyro_rps[2] = 0.0;
-		
 		if((fabs(imu.acc_m_s2[0])>1e-6)&&(fabs(imu.acc_m_s2[1])>1e-6)&&(fabs(imu.acc_m_s2[2])>1e-6)&&(fabs(imu.gyro_rps[0])>1e-8)&&(fabs(imu.gyro_rps[1])>1e-8))
 				flag = 1;
 			else flag = 0;
@@ -300,5 +294,4 @@ u8 imu_validation(void)
 	return flag;
 
 }
-
 

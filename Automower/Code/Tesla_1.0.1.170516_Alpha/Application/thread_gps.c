@@ -346,7 +346,7 @@ void mower_gps_thread(void* parameter)
 	rt_base_t level = 0;
 	static u8 first_time = 0;
 	float g_timediff_s_gps;           //time difference[s]
-
+  s64 a = 0;
 	
 	while (1)
 	{
@@ -384,14 +384,16 @@ void mower_gps_thread(void* parameter)
 			//temperory data send function
 			//level = rt_hw_interrupt_disable();
 			rt_enter_critical();
-			send_data(g_timediff_s_gps,delta_odo_l,delta_odo_r,GPS_DATA);
-			
+			//if(a%2==0){
+				send_data(g_timediff_s_gps,delta_odo_l,delta_odo_r,GPS_DATA);
+			//}
+			//a++;
 			//send_data_chc(g_timediff_s_gps,delta_odo_l,delta_odo_r,GPS_DATA);
 			//send_data_test1();    //有数据头，发送自然数序列		
 			//send_data_test2();    //无数据头，间隔发送0和1
 			rt_exit_critical();
 		}
 		if(first_time==0) first_time=1;
-		rt_thread_delay(100);// 
+		rt_thread_delay(50);// 
 		}
 }

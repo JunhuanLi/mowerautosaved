@@ -53,7 +53,10 @@ void Motion_Update_2D_Point(T_motion_tracker* obj,float point_x, float point_y,f
 
 
 float Motion_Vect2Angle(float x, float y);
-void rotateAngle(T_motion_tracker* obj, float vec_x, float vec_y, T_side rot_dir);
+void rotateAngle(T_motion_tracker* obj, float angle, T_side rot_dir);
+void rotateVector(T_motion_tracker* obj, float vec_x, float vec_y, T_side rot_dir);
+
 void trackPoint(T_motion_tracker* obj, float target_x, float target_y);
-void stop(T_motion_tracker* obj);
+void trackVector(T_motion_tracker* obj, float vec_x, float vec_y);
+void setVelocity(T_motion_tracker* obj, float linear_vel, float angular_vel);
 #endif

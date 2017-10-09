@@ -45,5 +45,12 @@
 .\objects\motion_imu.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\objects\motion_imu.o: ..\Algorithm\include\motion_math.h
 .\objects\motion_imu.o: ..\Algorithm\include\motion_types.h
+.\objects\motion_imu.o: ..\Algorithm\include\global_planner.h
+.\objects\motion_imu.o: ..\Algorithm\include\map_server.h
+.\objects\motion_imu.o: ..\OS\include\rtthread.h
+.\objects\motion_imu.o: ..\OS\include\rtdebug.h
+.\objects\motion_imu.o: ..\OS\include\rtservice.h
+.\objects\motion_imu.o: ..\OS\include\rtm.h
+.\objects\motion_imu.o: ..\OS\include\rtthread.h
 .\objects\motion_imu.o: ..\include\global.h
 .\objects\motion_imu.o: ..\Driver\include\usart_driver.h

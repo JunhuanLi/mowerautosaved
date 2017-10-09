@@ -57,6 +57,22 @@
 #define UART8_GPIO_RCC   		RCC_AHB1Periph_GPIOE
 #define RCC_APBPeriph_UART8	RCC_APB1Periph_UART8
 
+
+
+#define RT_SERIAL_CONFIG_USER1           \
+{                                          \
+    BAUD_RATE_115200, /* 115200 bits/s */  \
+    DATA_BITS_8,      /* 8 databits */     \
+    STOP_BITS_1,      /* 1 stopbit */      \
+    PARITY_NONE,      /* No parity  */     \
+    BIT_ORDER_LSB,    /* LSB first sent */ \
+    NRZ_NORMAL,       /* Normal mode */    \
+    200, /* Buffer size */  \
+    0                                      \
+}
+
+
+
 extern struct rt_device uart2_device;
 extern struct rt_device uart8_device;
 

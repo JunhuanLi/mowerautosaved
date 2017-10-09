@@ -72,11 +72,12 @@
 .\objects\send_data.o: ..\Driver\include\usart.h
 .\objects\send_data.o: ..\include\board.h
 .\objects\send_data.o: ..\include\global.h
+.\objects\send_data.o: ..\Algorithm\include\movvarf.h
 .\objects\send_data.o: ..\Algorithm\include\imu.h
 .\objects\send_data.o: ..\Algorithm\include\normK.h
 .\objects\send_data.o: ..\Algorithm\include\imu_processing.h
 .\objects\send_data.o: ..\Application\include\mower_common.h
-.\objects\send_data.o: ..\Algorithm\include\movvarf.h
 .\objects\send_data.o: ..\Application\include\debug.h
 .\objects\send_data.o: ..\Algorithm\include\global_planner.h
 .\objects\send_data.o: ..\Algorithm\include\map_server.h
+.\objects\send_data.o: ..\Algorithm\include\conv_enc.h

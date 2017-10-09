@@ -84,23 +84,23 @@ ARM Macro Assembler    Page 2
    49 00002500         ;   <o>  Heap Size (in Bytes) <0x0-0xFFFFFFFF:8>
    50 00002500         ; </h>
    51 00002500         
-   52 00002500 00000200 
+   52 00002500 0000C800 
                        Heap_Size
-                               EQU              0x00000200
+                               EQU              0x0000C800
    53 00002500         
    54 00002500                 AREA             HEAP, NOINIT, READWRITE, ALIGN=
 3
    55 00000000         __heap_base
    56 00000000         Heap_Mem
                                SPACE            Heap_Size
-   57 00000200         __heap_limit
-   58 00000200         
-   59 00000200                 PRESERVE8
-   60 00000200                 THUMB
-   61 00000200         
-   62 00000200         
-   63 00000200         ; Vector Table Mapped to Address 0 at Reset
-   64 00000200                 AREA             RESET, DATA, READONLY
+   57 0000C800         __heap_limit
+   58 0000C800         
+   59 0000C800                 PRESERVE8
+   60 0000C800                 THUMB
+   61 0000C800         
+   62 0000C800         
+   63 0000C800         ; Vector Table Mapped to Address 0 at Reset
+   64 0000C800                 AREA             RESET, DATA, READONLY
    65 00000000                 EXPORT           __Vectors
    66 00000000                 EXPORT           __Vectors_End
    67 00000000                 EXPORT           __Vectors_Size
@@ -915,7 +915,7 @@ ARM Macro Assembler    Page 15
 
 
               00002500 
-              00000200 
+              0000C800 
               00000000 
 Command Line: --debug --xref --diag_suppress=9931 --cpu=Cortex-M4.fp --apcs=int
 erwork --depend=.\objects\startup_stm32f429_439xx.d -o.\objects\startup_stm32f4
@@ -986,7 +986,7 @@ Symbol: __heap_base
    Uses
       None
 Comment: __heap_base unused
-__heap_limit 00000200
+__heap_limit 0000C800
 
 Symbol: __heap_limit
    Definitions
@@ -2064,7 +2064,7 @@ Comment: __user_initial_stackheap used once
 ARM Macro Assembler    Page 1 Alphabetic symbol ordering
 Absolute symbols
 
-Heap_Size 00000200
+Heap_Size 0000C800
 
 Symbol: Heap_Size
    Definitions

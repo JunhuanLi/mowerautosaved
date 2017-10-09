@@ -72,3 +72,4 @@
 .\objects\ekf7_gps6_mu.o: ..\Driver\include\usart.h
 .\objects\ekf7_gps6_mu.o: ..\include\board.h
 .\objects\ekf7_gps6_mu.o: ..\include\global.h
+.\objects\ekf7_gps6_mu.o: ..\Algorithm\include\movvarf.h

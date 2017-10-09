@@ -29,7 +29,7 @@ float rot_vec[3] = {1,0,0};   //rotation vector in x/y/z order
 float eul_rad[3] = {0};       //euler angles   [rad]  1=yaw 2=pitch 3=roll
 float quat[4] = {0};          //quaternion in Hamilton definition
 float g_timediff_s_imu;           //time difference[s]
-float g_timediff_s_gps;           //time difference[s]
+//float g_timediff_s_gps;           //time difference[s]
 float gyro_bias[3];           //gyroscope bias [rad/s]  
 float acc_bias_g[3];           //accelerometer init bias [g]  
 float gyro_bias_20602[3];           //gyroscope bias [rad/s]  

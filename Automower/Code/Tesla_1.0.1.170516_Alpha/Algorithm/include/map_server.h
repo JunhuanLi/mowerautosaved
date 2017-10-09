@@ -18,9 +18,9 @@
 #ifndef __MAP_SERVER_H__
 #define __MAP_SERVER_H__
 
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+//#include <stdio.h>
+//#include <string.h>
+//#include <stdlib.h>
 #include <math.h>
 #include <rtthread.h>
 #include "global.h"
@@ -29,6 +29,10 @@
 #define BYTE_BITS 8 
 #define OCC_BITS 2			//use 2 bits to represent 4 states of grid
 #define DIR_BITS 2			//use 2 bits to represent 4 directions of grid
+#define MAP_RESOL 0.25
+#define MAX_LAWN_WIDTH 30
+#define MAX_LAWN_HEIGHT 30
+//#define PRE_MAP_BYTES 32400 //(30*1.5*2/0.25)^2
 
 // 4 states of grid occupancy
 #define OCC_UNKNOWN 0
@@ -134,7 +138,7 @@ typedef struct
 void PL_i_init(PL_i_list *PL_list_ptr, int nitems); 
 void PL_i_clear(PL_i_list PL_list, int nitems);
 void PL_i_insert(PL_i_list graph, int p_node, int c_node);
-
+void PL_i_print(PL_i_list graph, int nodes_num);
 
 /* Linked List(point node) Declaration */
 typedef struct L_p_node_
@@ -170,12 +174,7 @@ extern T_occ_grid g_map;								//the active map
 extern T_pose_m g_current_pose_on_map;	//current pose on map(for @Gao Xiang)
 extern T_point_m g_tr_map_in_lawngrid;	//translation(unit) of map orig refer to lawn grid;
 
-extern int g_map_color_negate;	//if true, whiter pixels are occupied, and blacker pixels are free
-extern float g_map_occ_thh;			//occupied threshold
-extern float g_map_free_thh;		//free threshold
-extern float g_map_resol;				//resolution of map: distance(m) of one grid
-extern float g_max_lawn_width;	//max width of lawn(m)
-extern float g_max_lawn_height; //max height of lawn(m)
+//extern map_frame_send_sraus_msg_t map_frame_send_sraus_msg; //from @Gao Xiang
 
 extern PL_i_list g_graph; //the global adjacency graph
 extern int g_adj_vexnum; 
@@ -196,12 +195,13 @@ int graph_init();
 int graph_purge();
 int sub2ind(int width, int height, int sub_x, int sub_y);
 int ind2sub(int width, int height, int ndx, int *sub_x_out, int *sub_y_out);
-int set_all_2b_grids(unsigned char *grids, int value);
-int set_all_16b_grids(unsigned short *grids, int value);
+int set_all_2b_grids(unsigned char *grids, int grids_num, int value);
+int set_all_16b_grids(unsigned short *grids, int grids_num, int value);
 int set_2b_grid_value(unsigned char *grids, int ndx, int value);
 int get_2b_grid_value(unsigned char *grids, int ndx);
 int set_bits(char *x_ptr, int p, int n, int state);
 int get_bits(char x, int p, int n);
+int ms_abs(int x);
 
 int map_clip(); 
 int map_fill(); //### TO BE IMPLEMENTED

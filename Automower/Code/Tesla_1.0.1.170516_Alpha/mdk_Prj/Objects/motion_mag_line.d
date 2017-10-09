@@ -45,6 +45,5 @@
 .\objects\motion_mag_line.o: C:\Keil_v5\ARM\ARMCC\Bin\..\include\math.h
 .\objects\motion_mag_line.o: ..\Algorithm\include\motion_math.h
 .\objects\motion_mag_line.o: ..\Algorithm\include\motion_types.h
-.\objects\motion_mag_line.o: ..\Algorithm\include\motion_imu.h
 .\objects\motion_mag_line.o: ..\include\global.h
 .\objects\motion_mag_line.o: ..\Driver\include\usart_driver.h

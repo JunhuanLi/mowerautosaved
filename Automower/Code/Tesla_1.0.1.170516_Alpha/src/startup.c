@@ -67,7 +67,6 @@ void assert_failed(u8* file, u32 line)
  */
 void rtthread_startup(void)
 {
-
 	/* init board */
 	rt_hw_board_init();
 
@@ -102,17 +101,18 @@ void rtthread_startup(void)
         pthread_system_init();
 #endif
 
-    /* init components */
-    //rt_components_init();
+  /* init components */
+  //rt_components_init();
 
-    /* init timer thread */
-    rt_system_timer_thread_init();
+  /* init timer thread */
+  rt_system_timer_thread_init();
 	
 	/* init idle thread */
 	rt_thread_idle_init();
 	
 	/* start scheduler */
 	rt_system_scheduler_start();
+	
 	/* never reach here */
 	return ;
 }

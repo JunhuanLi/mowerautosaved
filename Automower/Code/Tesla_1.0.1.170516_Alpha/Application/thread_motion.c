@@ -161,7 +161,8 @@ extern T_trigger g_trigger;
 extern T_motion motion;
 extern T_action g_action;
 extern T_params_act g_action_params;
-
+unsigned short OUT_STATION_FLAG = 0;
+int state=0;
 void mower_motion_thread(void* parameter)
 {
   rt_uint32_t recved;
@@ -171,7 +172,7 @@ void mower_motion_thread(void* parameter)
 	
 	rt_thread_delay(1000); //need be removed later 
 	Motion_Init(&motion,1);
-	
+
 	/*Test Program*/
 	//while(is_odo_ready==0);
 	//mower_motion_square_position(&motion,0.1,1.2f);//4 meter
@@ -184,80 +185,124 @@ void mower_motion_thread(void* parameter)
 	//Motion_Zigzag_Start(&motion,0.1,1,0,T_MOTION_ZIGZAG_TURN_CLOCKWISE);
 	//Motion_Zigzag_Init(&motion, 0.5, 0.5);
 	
-	motion.motion_state = MOTION_STATE_ZIGZAG;
+	//motion.motion_state = MOTION_STATE_ZIGZAG;
+	motion.motion_state = MOTION_STATE_OUT_STATION;
 	motion.zigzag.state = T_MOTION_ZIGZAG_STATE_LINE;
 	
 	g_trigger = INIT_PROC;
 	make_decision(&g_trigger, &g_action, &g_action_params);
 	
-	g_action_params.u_turn_.fin_vec[0]=1;
-	g_action_params.u_turn_.fin_vec[1]=0;
-	
 	rt_kprintf("\r\n Thread Motion Initial...");
-	while (1)
+	/*
+	while(is_att_valid < 2)
+	{
+	
+	}
+	rt_kprintf("\r\n is_att_valid ok...");
+	*/
+	while(1)
 	{
 		rt_event_recv(&sys_event, SYS_EVN_MOTION, RT_EVENT_FLAG_AND|RT_EVENT_FLAG_CLEAR, RT_WAITING_FOREVER, &recved);
-		//rt_enter_critical();	//	LCD_PWM = 0;
-		//rt_kprintf("\r\n Thread Motion is running!");
-		/*
-		//bumper issue
-		get_front_bumper_info(&g_Bumper);
-		if(g_Bumper.left == 0)
-		{
-			g_trigger = RIGID_TOUCHED;
-		}
-		//sensor issue
+		Motion_Get_Position_2D(&motion.tracker.sense);
+		Motion_Get_Sensor(&motion.tracker.sense);
+		motion.tracker.line_vel = 0.1;
+		Motion_Mag_Line_Test(&motion.tracker);
 		
+		Motion_Process_Motor_Speed(&motion);
+		update_motor_control();
 		
-//½Ç¶ÈÐý×ª²âÊÔ³ÌÐò
-//		if(motion.tracker.path_imu.rotationFinished == FALSE)
-//			rotateAngle(&motion.tracker, 90, MOTION_TURN_COUNTERCLOCKWISE);
-//		else{
-//			motion.tracker.line_vel = 0.1;
-//			motion.tracker.angular_vel = 0;
-//		}
+	}
+
+	while (1)
+	{
 		
+		rt_event_recv(&sys_event, SYS_EVN_MOTION, RT_EVENT_FLAG_AND|RT_EVENT_FLAG_CLEAR, RT_WAITING_FOREVER, &recved);
+
+		if(is_att_valid == 2)
+		{	
 		
-		mag_sensor_update();
-		if((mag_state.right_sensor_change == 1)&&(mag_state.left_sensor_change == 1))
-		{
-			//g_trigger = WIRE_SENSED;
-			motion.zigzag.state = T_MOTION_ZIGZAG_STATE_TURN;
-			
-			mag_state.right_sensor_change = 0;
-			mag_state.left_sensor_change = 0;
-		}
-		*/
-		//Motion_Run( &motion);
-		//if(g_front_bumper.left)
-		//Update all the sensors first
 		Motion_Get_Position_2D(&motion.tracker.sense);
 		Motion_Get_Sensor(&motion.tracker.sense);
 		
-		//global planner record
-		record_track(); 
-		update_map_nav();
-		//Motion_Process_Obstacle(&motion);
 		
-		//Run controller
 		
 		//Motion_Run_Tracker(&motion.tracker);
 		if(motion.motion_state == MOTION_STATE_ZIGZAG)
 		{
 			//make_decision(&g_trigger, &g_action, &g_action_params);
-			
 			//params trans
-			
-			
 			Motion_Run(&motion);
-			
-			
 		}
-
+		else if(motion.motion_state == MOTION_STATE_OUT_STATION)
+		{
+			motion.tracker.line_vel = - 0.10;
+			OUT_STATION_FLAG ++;
+			if(OUT_STATION_FLAG > 100)
+			{
+				motion.motion_state = MOTION_STATE_MAGLINE;
+			}
+		}
+		else if(motion.motion_state == MOTION_STATE_MAGLINE)
+		{
+			motion.tracker.target_vel = 0.2;
+			motion.tracker.line_vel = 0.2;
+			
+			Motion_Mag_Line_Test(&motion.tracker);
+			//Motion_Run_Mag_Line(&motion.tracker);
+					//bumper issue
+			get_front_bumper_info(&g_Bumper);
+			if(g_Bumper.left == 1)
+			{
+				g_trigger = RIGID_TOUCHED;
+				make_decision(&g_trigger, &g_action, &g_action_params);
+				
+				/*test part*/
+				
+//				if(!motion.tracker.path_imu.rotationFinished)
+//					rotateVector(&motion.tracker, g_action_params.to_pose_.pos[0]-motion.tracker.sense.pos_x,
+//												 g_action_params.to_pose_.pos[1]-motion.tracker.sense.pos_y, LEFT_STEERING);
+//				else
+//				{
+//					motion.tracker.path_imu.rotationFinished = FALSE;
+//					motion.motion_state = MOTION_STATE_P2P;
+//				}
+				
+				/*end test part*/
+				
+				motion.motion_state = MOTION_STATE_P2P;
+			}	
+		}
+		else if(motion.motion_state == MOTION_STATE_P2P)
+		{
+			if(!motion.tracker.path_imu.pointReached)
+			{
+				trackPoint(&motion.tracker, g_action_params.to_pose_.pos[0], g_action_params.to_pose_.pos[1]);
+			}
+			else
+			{
+				motion.tracker.path_imu.pointReached = FALSE;
+				g_trigger = POS_REACHED;
+				make_decision(&g_trigger, &g_action, &g_action_params);
+				if(g_action == DIR_DRIVE)
+				{
+					motion.motion_state = MOTION_STATE_ZIGZAG;
+					g_action_params.u_turn_.fin_vec[0] = g_action_params.dir_drive_.fin_vec[0];
+					g_action_params.u_turn_.fin_vec[1] = g_action_params.dir_drive_.fin_vec[1];
+					
+					
+				}
+				else
+				{}
+			}
+		}
 		//Update Motor Command
 		
 		Motion_Process_Motor_Speed(&motion);
 		update_motor_control();
+		
+		//global planner record
+		record_track(); 
+		update_map_nav();
 		//Debug
 		//rt_kprintf("angle = %d                x = %d                 y = %d \n\r",(int)(eul_rad[0]*10*57.3), (int)(motion.tracker.sense.pos_x*100), (int)(motion.tracker.sense.pos_y*100));
 		//rt_kprintf("left = %d, right =%d \n\r",(int)(motion.tracker.line_vel),(int)(motion.tracker.angular_vel));
@@ -268,6 +313,7 @@ void mower_motion_thread(void* parameter)
 			//	LCD_PWM = 1;
 			//	rt_exit_critical();
 		}
+	}
 }
 
 /*Turn to mag*/

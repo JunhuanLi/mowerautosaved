@@ -22,117 +22,71 @@ Dialog DLL:      TCM.DLL V1.32.0.0
  
 <h2>Project:</h2>
 F:\AmV01\Code\Tesla_1.0.1.170516_Alpha\mdk_Prj\mower_v0.1.0.uvprojx
-Project File Date:  09/25/2017
+Project File Date:  10/09/2017
 
 <h2>Output:</h2>
 *** Using Compiler 'V5.06 update 5 (build 528)', folder: 'C:\Keil_v5\ARM\ARMCC\Bin'
 Build target 'Robot'
 compiling thread_motion.c...
-..\Algorithm\include\map_server.h(97): warning:  #1295-D: Deprecated declaration map_init - give arg types
+..\Algorithm\include\map_server.h(193): warning:  #1295-D: Deprecated declaration map_init - give arg types
   int map_init(); 
-..\Algorithm\include\map_server.h(100): warning:  #1295-D: Deprecated declaration set_all_grids_zero - give arg types
-  int set_all_grids_zero();
-..\Algorithm\include\map_server.h(106): warning:  #1295-D: Deprecated declaration map_clip - give arg types
+..\Algorithm\include\map_server.h(194): warning:  #1295-D: Deprecated declaration graph_init - give arg types
+  int graph_init();
+..\Algorithm\include\map_server.h(195): warning:  #1295-D: Deprecated declaration graph_purge - give arg types
+  int graph_purge();
+..\Algorithm\include\map_server.h(206): warning:  #1295-D: Deprecated declaration map_clip - give arg types
   int map_clip(); 
-..\Algorithm\include\map_server.h(107): warning:  #1295-D: Deprecated declaration map_fill - give arg types
-  int map_fill(); 
-..\Algorithm\include\map_server.h(109): warning:  #1295-D: Deprecated declaration ray_tracing - give arg types
-  int ray_tracing(); 
-..\Algorithm\include\map_server.h(111): warning:  #1295-D: Deprecated declaration map_send - give arg types
-  int map_send(); 
-..\Algorithm\include\map_server.h(112): warning:  #1295-D: Deprecated declaration map_load - give arg types
-  int map_load(); 
-..\Algorithm\include\map_server.h(113): warning:  #1295-D: Deprecated declaration map_save - give arg types
-  int map_save(); 
-..\Algorithm\include\global_planner.h(137): warning:  #1295-D: Deprecated declaration planner_init - give arg types
+..\Algorithm\include\map_server.h(207): warning:  #1295-D: Deprecated declaration map_fill - give arg types
+  int map_fill(); //### TO BE IMPLEMENTED
+..\Algorithm\include\map_server.h(209): warning:  #1295-D: Deprecated declaration ray_tracing - give arg types
+  int ray_tracing(); //### TO BE IMPLEMENTED
+..\Algorithm\include\map_server.h(211): warning:  #1295-D: Deprecated declaration map_send - give arg types
+  int map_send(); //### TO BE IMPLEMENTED
+..\Algorithm\include\map_server.h(212): warning:  #1295-D: Deprecated declaration map_load - give arg types
+  int map_load(); //### TO BE IMPLEMENTED
+..\Algorithm\include\map_server.h(213): warning:  #1295-D: Deprecated declaration map_save - give arg types
+  int map_save(); //### TO BE IMPLEMENTED
+..\Algorithm\include\map_server.h(215): warning:  #1295-D: Deprecated declaration boundary_filter - give arg types
+  void boundary_filter(); 
+..\Algorithm\include\global_planner.h(150): warning:  #1295-D: Deprecated declaration planner_init - give arg types
   int planner_init();
-..\Algorithm\include\global_planner.h(140): warning:  #1295-D: Deprecated declaration cell_cross - give arg types
-  int cell_cross();
-..\Algorithm\include\global_planner.h(144): warning:  #1295-D: Deprecated declaration record_track - give arg types
-  int record_track(); 
-..\Algorithm\include\global_planner.h(145): warning:  #1295-D: Deprecated declaration get_pose_in_lawn - give arg types
+..\Algorithm\include\global_planner.h(151): warning:  #1295-D: Deprecated declaration get_pose_in_lawn - give arg types
   int get_pose_in_lawn(); 
-..\Algorithm\include\global_planner.h(146): warning:  #1295-D: Deprecated declaration get_pose_bstr - give arg types
+..\Algorithm\include\global_planner.h(152): warning:  #1295-D: Deprecated declaration get_pose_bstr - give arg types
   int get_pose_bstr(); 
-..\Algorithm\include\global_planner.h(149): warning:  #1295-D: Deprecated declaration compute_turn_side - give arg types
+..\Algorithm\include\global_planner.h(153): warning:  #1295-D: Deprecated declaration record_track - give arg types
+  int record_track(); 
+..\Algorithm\include\global_planner.h(154): warning:  #1295-D: Deprecated declaration update_map_nav - give arg types
+  int update_map_nav(); 
+..\Algorithm\include\global_planner.h(167): warning:  #1295-D: Deprecated declaration modify_cell_entries - give arg types
+  int modify_cell_entries(); 
+..\Algorithm\include\global_planner.h(181): warning:  #1295-D: Deprecated declaration compute_turn_side - give arg types
   T_side compute_turn_side();
-..\Algorithm\include\global_planner.h(150): warning:  #1295-D: Deprecated declaration compute_opposite_dir - give arg types
-  float compute_opposite_dir();
-..\Application\thread_motion.c(116): warning:  #177-D: variable "buf"  was declared but never referenced
+..\Application\thread_motion.c(120): warning:  #177-D: variable "buf"  was declared but never referenced
         uint8_t buf[100] = "hello!!!!!!!!!\n\r";
-..\Application\thread_motion.c(164): warning:  #223-D: function "mag_sensor_initial" declared implicitly
+..\Application\thread_motion.c(171): warning:  #223-D: function "mag_sensor_initial" declared implicitly
         mag_sensor_initial();
-..\Application\thread_motion.c(321): warning:  #223-D: function "rotateAngle" declared implicitly
-                                rotateAngle(&motion->tracker, 90, MOTION_TURN_COUNTERCLOCKWISE);
-..\Application\thread_motion.c(334): warning:  #223-D: function "rotateAngle" declared implicitly
-                                rotateAngle(&motion->tracker, 90, MOTION_TURN_COUNTERCLOCKWISE);
-..\Application\thread_motion.c(347): warning:  #223-D: function "rotateAngle" declared implicitly
-                                rotateAngle(&motion->tracker, 90, MOTION_TURN_COUNTERCLOCKWISE);
-..\Application\thread_motion.c(360): warning:  #223-D: function "rotateAngle" declared implicitly
-                                rotateAngle(&motion->tracker, 90, MOTION_TURN_COUNTERCLOCKWISE);
-..\Application\thread_motion.c(254): warning:  #177-D: variable "count"  was declared but never referenced
+..\Application\thread_motion.c(209): warning:  #223-D: function "Motion_Mag_Line_Test" declared implicitly
+                Motion_Mag_Line_Test(&motion.tracker);
+..\Application\thread_motion.c(250): warning:  #223-D: function "Motion_Mag_Line_Test" declared implicitly
+                        Motion_Mag_Line_Test(&motion.tracker);
+..\Application\thread_motion.c(216): warning:  #128-D: loop is not reachable
+        while (1)
+..\Application\thread_motion.c(322): warning:  #177-D: variable "state"  was declared but never referenced
+        uint8_t state = 0;
+..\Application\thread_motion.c(323): warning:  #177-D: variable "count"  was declared but never referenced
         uint32_t count = 0;
 ..\Application\thread_motion.c(36): warning:  #177-D: function "mower_motion_square"  was declared but never referenced
   static void mower_motion_square(T_motion* motion,float speed, uint32_t side_length)
-..\Application\thread_motion.c(110): warning:  #177-D: function "mower_motion_circle"  was declared but never referenced
+..\Application\thread_motion.c(114): warning:  #177-D: function "mower_motion_circle"  was declared but never referenced
   static void mower_motion_circle(T_motion* motion,float line_speed, float angle_speed)
-..\Application\thread_motion.c(251): warning:  #177-D: function "mower_motion_square_position"  was declared but never referenced
+..\Application\thread_motion.c(320): warning:  #177-D: function "mower_motion_square_position"  was declared but never referenced
   static void mower_motion_square_position(T_motion* motion,float speed, float side_length)
-..\Application\thread_motion.c: 25 warnings, 0 errors
-compiling motion_control.c...
-..\Algorithm\motion_control.c(188): warning:  #223-D: function "rt_kprintf" declared implicitly
-                rt_kprintf("Waiting orders! \n");
-..\Algorithm\motion_control.c: 1 warning, 0 errors
-compiling motion_imu.c...
-..\Algorithm\motion_imu.c(148): warning:  #177-D: variable "angular_vel"  was declared but never referenced
-        float                                                                                                                           angular_vel;
-..\Algorithm\motion_imu.c(227): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                angle = atan2f(y,x)/pi*180.0;
-..\Algorithm\motion_imu.c(259): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-        error = acosf(dp1)*57.4;
-..\Algorithm\motion_imu.c(249): warning:  #177-D: variable "dist_sq"  was declared but never referenced
-        float dist_sq = 0.0;
-..\Algorithm\motion_imu.c(286): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-        if(dot_product > 1.0)
-..\Algorithm\motion_imu.c(289): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-        angleError = acosf(dot_product)*57.3;
-..\Algorithm\motion_imu.c(278): warning:  #550-D: variable "angleError"  was set but never used
-        float                                                                           angleError=0.0;
-..\Algorithm\motion_imu.c(281): warning:  #550-D: variable "cross_product"  was set but never used
-        float                                                                           cross_product = 0.0;
-..\Algorithm\motion_imu.c(181): warning:  #177-D: function "Tracking_2D_Line"  was declared but never referenced
-  static void Tracking_2D_Line(T_motion_tracker* obj)
-..\Algorithm\motion_imu.c: 9 warnings, 0 errors
-compiling motion_mag_line.c...
-..\Algorithm\motion_mag_line.c(101): warning:  #111-D: statement is unreachable
-        return MOTION_MAG_LINE_ORI_MISSING;
-..\Algorithm\motion_mag_line.c(104): warning:  #188-D: enumerated type mixed with another type
-        T_motion_mag_line_orientation_type                      orientation = 0;
-..\Algorithm\motion_mag_line.c(255): warning:  #111-D: statement is unreachable
-                        obj->path_mag_line.state = MOTION_MAG_LINE_STATE_IDLE;
-..\Algorithm\motion_mag_line.c(276): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                                        obj->angular_vel = 0.75*obj->target_vel;
-..\Algorithm\motion_mag_line.c(284): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                                        obj->angular_vel = 0.75*obj->target_vel;
-..\Algorithm\motion_mag_line.c(262): warning:  #177-D: variable "err"  was declared but never referenced
-                float                                                                                           err;
-..\Algorithm\motion_mag_line.c(263): warning:  #177-D: variable "pi_out"  was declared but never referenced
-                float                                                                                           pi_out;
-..\Algorithm\motion_mag_line.c(108): warning:  #177-D: variable "left_distance"  was declared but never referenced
-        float                                                                                                                                   left_distance, right_distance;
-..\Algorithm\motion_mag_line.c(108): warning:  #177-D: variable "right_distance"  was declared but never referenced
-        float                                                                                                                                   left_distance, right_distance;
-..\Algorithm\motion_mag_line.c(109): warning:  #550-D: variable "rot_dir"  was set but never used
-        static  T_motion_turn_type                                                      rot_dir;
-..\Algorithm\motion_mag_line.c(520): warning:  #1035-D: single-precision operand implicitly converted to double-precision
-                if( magRatio > 0.1)
-..\Algorithm\motion_mag_line.c(636): warning:  #1-D: last line of file ends without a newline
-  //}
-..\Algorithm\motion_mag_line.c: 12 warnings, 0 errors
+..\Application\thread_motion.c: 27 warnings, 0 errors
 linking...
-Program Size: Code=96824 RO-data=10144 RW-data=1144 ZI-data=29800  
+Program Size: Code=112536 RO-data=10288 RW-data=1312 ZI-data=82032  
 FromELF: creating hex file...
-".\Objects\mower_stm32f429.axf" - 0 Error(s), 47 Warning(s).
+".\Objects\mower_stm32f429.axf" - 0 Error(s), 27 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -146,7 +100,7 @@ Package Vendor: Keil
   C:\Keil_v5\ARM\PACK\Keil\STM32F4xx_DFP\2.11.0\Drivers\CMSIS\Device\ST\STM32F4xx\Include
 
 <h2>Collection of Component Files used:</h2>
-Build Time Elapsed:  00:00:06
+Build Time Elapsed:  00:00:04
 </pre>
 </body>
 </html>

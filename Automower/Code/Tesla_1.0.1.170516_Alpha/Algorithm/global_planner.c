@@ -41,6 +41,7 @@ int g_flg_mapping = 1;
 int g_flg_mapping_source = 0; 
 int g_flg_sens_stp_unoccur = 1; 
 int g_flg_endline_ever_touched = 0;
+int g_flg_outer_bdry_mapping = 1;
 
 T_pose g_orig_pose_in_lawn; 
 T_pose g_curr_pose_enu; 
@@ -54,7 +55,8 @@ float g_curr_bstr_width = 0.0;
 float g_lst_bstr_width = 0.0;
 
 float g_rot_lawn_in_enu; 
-float g_rot_bstr_prog_dir = PI_/2; //for TEST with @WU Haowen, upward bstr progress
+//float g_rot_bstr_prog_dir = PI_/2; 
+float g_rot_bstr_prog_dir = 0;
 
 
 /* Functions Definition */
@@ -70,6 +72,7 @@ int planner_init()
 	if(g_opt_remap) //########## NOTICE: TEMPORARY TRY, need to resume to above line!
 	{ 
 		map_init();	
+		graph_init();
 		L_p_init(&g_outer_bdry); 
 		PL_p_init(&g_wire_srndd_landscape_bdrys, MAX_LANDSCAPE_NUM); 
 		PL_p_init(&g_rigid_landscape_bdrys, MAX_LANDSCAPE_NUM); 
@@ -96,8 +99,8 @@ int planner_init()
 	g_curr_pose_enu.th = atan2(dir_ned[0], dir_ned[1]);
 	
 	if(pow(g_curr_pose_enu.pos.x, 2)+pow(g_curr_pose_enu.pos.y, 2) <= START_POS_TOL)
-		g_rot_lawn_in_enu = g_curr_pose_enu.th; //the orientation of the robot before start moving, is the x axis of lawn coord in enu.
-		//g_rot_lawn_in_enu = angle_add(g_curr_pose_enu.th, PI_);  //##### in REAL situation, robot is BACK OUT from station #####
+		//g_rot_lawn_in_enu = g_curr_pose_enu.th; //the orientation of the robot before start moving, is the x axis of lawn coord in enu.
+		g_rot_lawn_in_enu = angle_add(g_curr_pose_enu.th, PI_);  //##### in REAL situation, robot is BACK OUT from station #####
 	else
 		rt_kprintf("The lawn coordinates initialization failed!");
 	
@@ -137,14 +140,16 @@ int record_track()
 	
 	//record track when mapping mode is active
 	if(g_flg_mapping)
-	{
+	{		
 		int current_ndx;
 		T_pose last_pose_in_lawn;
 		T_pose last_pose_on_map;
 		int last_ndx;
 		
-		/* ##### NOTICE: NOT INEVITABLE, can be retrieved from "update_map_nav" ##### */
 		get_pose_in_lawn();
+		/* ##### NOTICE: NOT INEVITABLE, can be retrieved from "update_map_nav" ##### */
+		//g_current_pose_on_map.pos.x = (int)round(g_curr_pose_in_lawn.pos.x/g_map.info.resolution) - g_tr_map_in_lawngrid.x;
+		//g_current_pose_on_map.pos.y = (int)round(g_curr_pose_in_lawn.pos.y/g_map.info.resolution) - g_tr_map_in_lawngrid.y;
 		g_current_pose_on_map.pos.x = (int)(g_curr_pose_in_lawn.pos.x/g_map.info.resolution) - g_tr_map_in_lawngrid.x;
 		g_current_pose_on_map.pos.y = (int)(g_curr_pose_in_lawn.pos.y/g_map.info.resolution) - g_tr_map_in_lawngrid.y;
 		g_current_pose_on_map.th = g_curr_pose_in_lawn.th; 
@@ -162,6 +167,8 @@ int record_track()
 			if(!flg_empty)
 			{
 				last_pose_in_lawn = L_p_retrieve(g_outer_bdry, 0);
+				//last_pose_on_map.pos.x = (int)round(last_pose_in_lawn.pos.x/g_map.info.resolution) - g_tr_map_in_lawngrid.x;
+				//last_pose_on_map.pos.y = (int)round(last_pose_in_lawn.pos.y/g_map.info.resolution) - g_tr_map_in_lawngrid.y;
 				last_pose_on_map.pos.x = (int)(last_pose_in_lawn.pos.x/g_map.info.resolution) - g_tr_map_in_lawngrid.x;
 				last_pose_on_map.pos.y = (int)(last_pose_in_lawn.pos.y/g_map.info.resolution) - g_tr_map_in_lawngrid.y;
 				last_pose_on_map.th = last_pose_in_lawn.th; 
@@ -182,6 +189,8 @@ int record_track()
 			if(!flg_empty)
 			{
 				last_pose_in_lawn = L_p_retrieve(g_wire_srndd_landscape_bdrys + g_wire_srndd_landscape_cnt - 1, 0);
+				//last_pose_on_map.pos.x = (int)round(last_pose_in_lawn.pos.x/g_map.info.resolution) - g_tr_map_in_lawngrid.x;
+				//last_pose_on_map.pos.y = (int)round(last_pose_in_lawn.pos.y/g_map.info.resolution) - g_tr_map_in_lawngrid.y;
 				last_pose_on_map.pos.x = (int)(last_pose_in_lawn.pos.x/g_map.info.resolution) - g_tr_map_in_lawngrid.x;
 				last_pose_on_map.pos.y = (int)(last_pose_in_lawn.pos.y/g_map.info.resolution) - g_tr_map_in_lawngrid.y;
 				last_pose_on_map.th = last_pose_in_lawn.th; 
@@ -201,6 +210,8 @@ int record_track()
 			if(!flg_empty)
 			{
 				last_pose_in_lawn = L_p_retrieve(g_rigid_landscape_bdrys + g_rigid_landscape_cnt - 1, 0);
+				//last_pose_on_map.pos.x = (int)round(last_pose_in_lawn.pos.x/g_map.info.resolution) - g_tr_map_in_lawngrid.x;
+				//last_pose_on_map.pos.y = (int)round(last_pose_in_lawn.pos.y/g_map.info.resolution) - g_tr_map_in_lawngrid.y;
 				last_pose_on_map.pos.x = (int)(last_pose_in_lawn.pos.x/g_map.info.resolution) - g_tr_map_in_lawngrid.x;
 				last_pose_on_map.pos.y = (int)(last_pose_in_lawn.pos.y/g_map.info.resolution) - g_tr_map_in_lawngrid.y;
 				last_pose_on_map.th = last_pose_in_lawn.th; 
@@ -222,6 +233,8 @@ int record_track()
 int update_map_nav()
 {
 	get_pose_in_lawn();
+	//g_current_pose_on_map.pos.x = (int)round(g_curr_pose_in_lawn.pos.x/g_map.info.resolution) - g_tr_map_in_lawngrid.x;
+	//g_current_pose_on_map.pos.y = (int)round(g_curr_pose_in_lawn.pos.y/g_map.info.resolution) - g_tr_map_in_lawngrid.y;
 	g_current_pose_on_map.pos.x = (int)(g_curr_pose_in_lawn.pos.x/g_map.info.resolution) - g_tr_map_in_lawngrid.x;
 	g_current_pose_on_map.pos.y = (int)(g_curr_pose_in_lawn.pos.y/g_map.info.resolution) - g_tr_map_in_lawngrid.y;
 	g_current_pose_on_map.th = g_curr_pose_in_lawn.th; 
@@ -262,7 +275,7 @@ int build_adj_graph(float bstr_prog_dir)
 	L_i_list intragroup_spec_types;
 	
 	// 00.Clear the last graph
-	graph_purge();
+	//graph_purge();    //#################################################################
 	
 	// 01.Pick the critical points out, related to the boustrophedon direction
   // OUTPUT: CP points in order, and their types.
@@ -381,9 +394,9 @@ int build_adj_graph(float bstr_prog_dir)
 		L_i_delete_all_but_header(tmp_cp_types);
 		L_i_delete_all_but_header(isopoint_centers);
 	}
-	free(tmp_critical_points);
-	free(tmp_cp_types);
-	free(isopoint_centers);
+	rt_free(tmp_critical_points);
+	rt_free(tmp_cp_types);
+	rt_free(isopoint_centers);
 	
 	// 01c.bubble sort of critical points
 	bubble_sort_jointly(critical_points, cp_types, 0); //sorted by x	
@@ -445,9 +458,9 @@ int build_adj_graph(float bstr_prog_dir)
 		L_i_delete_all_but_header(intragroup_spec_types);
 		L_i_delete_all_but_header(cpsns);
 	}
-	free(pts_on_swpln);
-	free(intragroup_spec_types);
-	free(cpsns);
+	rt_free(pts_on_swpln);
+	rt_free(intragroup_spec_types);
+	rt_free(cpsns);
 	
 	//release resources
 	PL_p_clear(bdrys_in_bstr_dir, MAX_LANDSCAPE_NUM);
@@ -457,15 +470,16 @@ int build_adj_graph(float bstr_prog_dir)
 	PL_i_clear(cp_types_by_group, MAX_CP_NUM);
 	L_i_delete_all_but_header(active_cells_on_swpln);
 	
-	free(bdrys_in_bstr_dir);
-	free(critical_points);
-	free(cp_types);
-	free(critical_points_by_group);
-	free(cp_types_by_group);
-	free(active_cells_on_swpln);
+	rt_free(bdrys_in_bstr_dir);
+	rt_free(critical_points);
+	rt_free(cp_types);
+	rt_free(critical_points_by_group);
+	rt_free(cp_types_by_group);
+	rt_free(active_cells_on_swpln);
 	
 	g_adj_vexnum = next_csn; //csn is started from 0
 	modify_cell_entries();
+	PL_i_print(g_graph, g_adj_vexnum);
 	
 	return 0;
 }
@@ -480,6 +494,8 @@ int pick_cand_cps(L_p_list list, int idx)
 	
 	while(0 == pos_dir_quad)
 		pos_dir_quad = belong_to_quadrant(list, idx, ++i + idx);
+	
+	i = 0;
 	
 	while(0 == neg_dir_quad)
 		neg_dir_quad = belong_to_quadrant(list, idx, --i + idx);
@@ -531,7 +547,7 @@ int belong_to_quadrant(L_p_list list, int orig_idx, int start_idx)
 	if((shuttle_center.pos.x - origin.pos.x == 0) || (shuttle_center.pos.y - origin.pos.y == 0))
 		return 0;
 	
-	if(shuttle_center.pos.x - origin.pos.x > 0)
+	/*if(shuttle_center.pos.x - origin.pos.x > 0)
 	{
 		if((angle >= QUADRANT_DEAD_ZONE) && (angle <= PI_/2 - QUADRANT_DEAD_ZONE))
 			return 1;
@@ -549,7 +565,18 @@ int belong_to_quadrant(L_p_list list, int orig_idx, int start_idx)
 			return 2;
 		else
 			return 0;
-	}
+	}*/
+	
+	if((angle >= QUADRANT_DEAD_ZONE) && (angle <= PI_/2 - QUADRANT_DEAD_ZONE))
+		return 1;
+	else if((angle >= PI_/2 + QUADRANT_DEAD_ZONE) && (angle <= PI_ - QUADRANT_DEAD_ZONE))
+		return 2;
+	else if((angle >= -PI_ + QUADRANT_DEAD_ZONE) && (angle <= -PI_/2 - QUADRANT_DEAD_ZONE))
+		return 3;
+	else if((angle >= -PI_/2 + QUADRANT_DEAD_ZONE) && (angle <= -QUADRANT_DEAD_ZONE))
+		return 4;
+	else
+		return 0;
 }
 
 
@@ -560,9 +587,11 @@ int get_center_idx(int length, int start_idx, int end_idx)
 		return start_idx;
 	
 	if(end_idx > start_idx)
+		//return (int)round((start_idx + end_idx)/2); 
 		return (int)((start_idx + end_idx)/2); 
 	
 	if(end_idx < start_idx)
+		//return (int)round((start_idx + end_idx + length)/2); 
 		return (int)((start_idx + end_idx + length)/2); 
 }
 
@@ -572,7 +601,7 @@ int is_even(int n)
 {
 	float x;
 	
-	x = n/2;
+	x = (float)n/2;
 	if(x >= 0)
 	{
 		if((x - (int)x < 1e-5) || (x - (int)x > 1 - 1e-5))
@@ -695,12 +724,12 @@ int get_cpsn_alg_swpln(PL_p_list bdrys, T_pose cp, L_p_list pts_on_swpln)
 	
 	i = 0;
 	exp = 0;
-	x_ahead = cp.pos.x - CP_ANXD_ZONE_EST_AHEAD;
+	//x_ahead = cp.pos.x - CP_ANXD_ZONE_EST_AHEAD;
 	x_ahead = cp.pos.x - pow(-0.5, exp++) * CP_ANXD_ZONE_EST_AHEAD;
 	L_p_init(&pts_on_swpln);
 	while(i < g_total_bdrys_cnt)
 	{
-		if(!is_even(get_vrt_intxn_pts(bdrys + i, x_ahead, pts_on_swpln)))
+		if(!is_even(get_vrt_intxn_pts(bdrys + i++, x_ahead, pts_on_swpln)))
 		{
 			i = 0;
 			x_ahead -= pow(-0.5, exp++) * CP_ANXD_ZONE_EST_AHEAD;
@@ -1065,8 +1094,8 @@ int get_uncov_cell_entry(T_pose *entry_ptr)
 	unsigned char *vex_visited;
 	int cell_sn;
 	
-	vex_visited = calloc(g_adj_vexnum, sizeof(unsigned char));
-	if(vex_visited == NULL)
+	vex_visited = rt_calloc(g_adj_vexnum, sizeof(unsigned char));
+	if(vex_visited == RT_NULL)
 		rt_kprintf("calloc fails, visited matrix allocating fails");
 	else
 	{
@@ -1075,7 +1104,7 @@ int get_uncov_cell_entry(T_pose *entry_ptr)
 	}
 	
 	cell_sn = depth_first_search(vex_visited, 0);
-	free(vex_visited);
+	rt_free(vex_visited);
 	
 	if(cell_sn == -1)
 		return -1;
@@ -1128,6 +1157,8 @@ int event_preproc(T_trigger *trigger)
 		
 		case POS_REACHED:
 			g_trig_pos_reached = 1;
+			if(compute_dist(g_curr_pose_in_lawn, g_orig_pose_in_lawn) <= CHRGST_DOMAIN_RADIUS)
+				g_trig_chrgst_reached = 1; 		//##################### TEMPORARY TRY
 			break;
 		
 		
@@ -1173,8 +1204,11 @@ int event_preproc(T_trigger *trigger)
 		case RIGID_TOUCHED:	
 			get_pose_in_lawn(); 								//##### NOTICE: not inevitable, can be from "update_map_nav"
 			
-			if(compute_dist(g_curr_pose_in_lawn, g_orig_pose_in_lawn) <= CHRGST_DOMAIN_RADIUS)
+			if((compute_dist(g_curr_pose_in_lawn, g_orig_pose_in_lawn) <= CHRGST_DOMAIN_RADIUS) && g_flg_outer_bdry_mapping)
+			{
 				g_trig_chrgst_reached = 1; 				//reach the charge station
+				g_flg_outer_bdry_mapping = 0;     //###################### TEMPORARY TRY ########################
+			}
 			else if(1 == g_flg_sens_stp_unoccur)	//sensing stop for the 1st time
 			{
 				g_lst_sens_stp_pose_in_lawn = g_curr_pose_in_lawn;
@@ -1226,7 +1260,7 @@ int decision_assert(T_action *action_out, T_params_act *params_out)
 	int t4 = g_trig_wire_bstr_surge; 
 	int t5 = g_trig_rigid_bstr_sigchg;
 	
-	int t6 = g_flg_mapping && g_trig_chrgst_reached; 		//mapping proc, charge station
+	int t6 = g_trig_chrgst_reached; //mapping proc, charge station
 	int t7 = g_flg_mapping && g_trig_cell_end_reached;	//mapping proc, cell end
 	int t8; 																						//nav proc, cell end, has uncov cells
 	int t9; 																						//nav proc, cell end, all cells covered
@@ -1266,6 +1300,9 @@ int decision_assert(T_action *action_out, T_params_act *params_out)
 			if(g_flg_mapping == 1)
 			{
 				map_clip(); 
+				//map_frame_send_sraus_msg.send_map_info_flg = 1; //notify to @Gao Xiang
+				
+				boundary_filter();
 				build_adj_graph(g_rot_bstr_prog_dir); 
 				goal = g_cell_entries[0].left_entry; 
 			}
@@ -1287,17 +1324,11 @@ int decision_assert(T_action *action_out, T_params_act *params_out)
 			goal = uncov_cell_ent;
 		}
 		else if(t9)	//nav proc, cell end, all cells covered ==> go to charge station
-		{
 			goal = g_orig_pose_in_lawn;
-		}
 		else if(t10)	//nav proc, bstr, touched endline ever, has uncov cells ==> go to the objective cell
-		{
 			goal = uncov_cell_ent;
-		}
 		else if(t11)	//nav proc, bstr, touched endline ever, covering last cell(into a new one) ==> go to charge station
-		{
 			goal = g_orig_pose_in_lawn;
-		}
 		
 		//call global planner to generate global path
 		if(0 == g_path_cursor)
@@ -1308,7 +1339,7 @@ int decision_assert(T_action *action_out, T_params_act *params_out)
 			get_pose_in_lawn();
 			get_global_path(g_curr_pose_in_lawn, goal, pos_list, dir_list);
 			g_path_length = L_i_get_length(pos_list);
-			g_intercell_path = calloc(g_path_length, sizeof(T_pose));
+			g_intercell_path = rt_calloc(g_path_length, sizeof(T_pose));
 			
 			for(i = 0; i < g_path_length; i++)
 			{
@@ -1341,9 +1372,9 @@ int decision_assert(T_action *action_out, T_params_act *params_out)
 			}
 			
 			L_i_delete_all_but_header(pos_list); //delete all nodes but head
-			free(pos_list);  //delete head node
+			rt_free(pos_list);  //delete head node
 			L_i_delete_all_but_header(dir_list);
-			free(dir_list);
+			rt_free(dir_list);
 		}
 		
 		if(g_path_cursor < g_path_length)
@@ -1358,7 +1389,7 @@ int decision_assert(T_action *action_out, T_params_act *params_out)
 			update_graph_status(1); 
 			
 			g_path_cursor = 0;
-			free(g_intercell_path);
+			rt_free(g_intercell_path);
 			
 			*action_out = DIR_DRIVE; 
 			params_out->dir_drive_.rot_side = RIGHT_STEERING; //##### NOTICE: TEMPORARY TRY #####
@@ -1469,6 +1500,8 @@ int get_global_path(T_pose start_in_lawn, T_pose goal_in_lawn, L_i_list pos_list
 	int ext_idx_nbr[4];
 	int cost_nbr[4];
 	int from_dir;
+	
+	int tmp_test;
 		
 	L_i_list closed_set; 		//##### NOTICE: need to FREE after use #####
 	L_i_list open_set;			//##### NOTICE: need to FREE after use #####
@@ -1476,7 +1509,11 @@ int get_global_path(T_pose start_in_lawn, T_pose goal_in_lawn, L_i_list pos_list
 	//L_i_list path;
 	unsigned char *came_from; //##### NOTICE: need to FREE after use #####
 	unsigned short *g_score;	//##### NOTICE: need to FREE after use #####
-		
+	
+	//start.x = (int)round(start_in_lawn.pos.x/g_map.info.resolution) - g_tr_map_in_lawngrid.x; 
+	//start.y = (int)round(start_in_lawn.pos.y/g_map.info.resolution) - g_tr_map_in_lawngrid.y; 
+	//goal.x = (int)round(goal_in_lawn.pos.x/g_map.info.resolution) - g_tr_map_in_lawngrid.x; 
+	//goal.y = (int)round(goal_in_lawn.pos.y/g_map.info.resolution) - g_tr_map_in_lawngrid.y; 
 	start.x = (int)(start_in_lawn.pos.x/g_map.info.resolution) - g_tr_map_in_lawngrid.x; 
 	start.y = (int)(start_in_lawn.pos.y/g_map.info.resolution) - g_tr_map_in_lawngrid.y; 
 	goal.x = (int)(goal_in_lawn.pos.x/g_map.info.resolution) - g_tr_map_in_lawngrid.x; 
@@ -1495,29 +1532,29 @@ int get_global_path(T_pose start_in_lawn, T_pose goal_in_lawn, L_i_list pos_list
 	L_i_prepend(open_set_f_score, 0 + h_cost_est(ndx_start, ndx_goal)); //the g_score at start point is 0
 	
 	//initialize 'came_from' and 'g_score'
-	came_from = calloc(g_map.info.width * g_map.info.height, (size_t)DIR_BITS); 
-	set_all_2b_grids(came_from, 0);  		//DIR_BITS = OCC_BITS = 2, share the same function "set_all_grids_2b"
-	g_score = calloc(g_map.info.width * g_map.info.height, sizeof(unsigned short)); //##### REMEMEBER to free it after use!!!
-	set_all_16b_grids(g_score, MAX_USHORT);
+	came_from = rt_calloc(g_map.info.width * g_map.info.height / (BYTE_BITS/DIR_BITS), sizeof(char)); 
+	set_all_2b_grids(came_from, g_map.info.width * g_map.info.height, 0);  		//DIR_BITS = OCC_BITS = 2, share the same function "set_all_grids_2b"
+	g_score = rt_calloc(g_map.info.width * g_map.info.height, sizeof(unsigned short)); //##### REMEMEBER to free it after use!!!
+	set_all_16b_grids(g_score, g_map.info.width * g_map.info.height, MAX_USHORT); 
 	g_score[ndx_start] = (unsigned short)0; 
 	
 	while(1 != L_i_is_empty(open_set))
 	{
 		int_idx_curr = L_i_get_idx_of_min(open_set_f_score);
-		ext_idx_curr = (int)L_i_retrieve(open_set, int_idx_curr);  //### idx STARTS "0", as in array
+		ext_idx_curr = (int)L_i_retrieve(open_set, int_idx_curr);  //### idx STARTS "0", as in array 
 		if(ext_idx_curr == ndx_goal)
 		{
 			reconstruct_path(ext_idx_curr, came_from, ndx_start, pos_list_out, dir_list_out); //NEED TO FREE PATH AND CALLLOC PATH_OUT
-			//*path_ptr_out = calloc(path_len, sizeof(T_pose));
+			//*path_ptr_out = rt_calloc(path_len, sizeof(T_pose));
 			
 			L_i_delete_all_but_header(closed_set);
-			free(closed_set);
+			rt_free(closed_set);
 			L_i_delete_all_but_header(open_set);
-			free(open_set);
+			rt_free(open_set);
 			L_i_delete_all_but_header(open_set_f_score);
-			free(open_set_f_score);
-			free(came_from);
-			free(g_score);
+			rt_free(open_set_f_score);
+			rt_free(came_from);
+			rt_free(g_score);
 			
 			return 0;  //calling function success
 		}
@@ -1527,26 +1564,29 @@ int get_global_path(T_pose start_in_lawn, T_pose goal_in_lawn, L_i_list pos_list
 		L_i_prepend(closed_set, (unsigned short)ext_idx_curr); 
 		
 		//get 4 neighbors of current grid
-		get_neighbor_cost(g_score, ext_idx_curr, ext_idx_nbr, cost_nbr);
+		get_neighbor_cost(g_score, ndx_goal, ext_idx_curr, ext_idx_nbr, cost_nbr);
 		for(from_dir = 0; from_dir < 4; from_dir++)
 		{
+			//if((cost_nbr[from_dir] == MAX_USHORT) && (ext_idx_nbr[from_dir] != ndx_goal)) //### TEMP TRY, FAILED
 			if(cost_nbr[from_dir] == MAX_USHORT) //obstacle
 				continue;
 			else
 			{
-				if(1 == L_i_is_member(closed_set, ext_idx_nbr[from_dir]))	//in closedSet, ignore
+				if(1 == L_i_is_member(closed_set, ext_idx_nbr[from_dir]))	//if in closedSet, ignore
 					continue;
 				
-				if(0 == L_i_is_member(open_set, ext_idx_nbr[from_dir]))		//not in openSet, add in
+				if(0 == L_i_is_member(open_set, ext_idx_nbr[from_dir]))		//if not in openSet, add in
 				{
 					L_i_prepend(open_set, (unsigned short)(ext_idx_nbr[from_dir]));
 					L_i_prepend(open_set_f_score, (unsigned short)MAX_USHORT);
 				}
 				
-				if(cost_nbr[from_dir] >= (int)(g_score[ext_idx_nbr[from_dir]]))	//not smaller than old cost, ignore
+				tmp_test = (int)(g_score[ext_idx_nbr[from_dir]]);
+				//if((cost_nbr[from_dir] >= tmp_test) && (ext_idx_nbr[from_dir] != ndx_goal)) //### TEMP TRY, FAILED
+				if(cost_nbr[from_dir] >= tmp_test)	//if not smaller than old cost, ignore
 					continue;
 				
-				//smaller than old cost, update
+				//otherwise, if smaller than old cost, update
 				set_2b_grid_value(came_from, ext_idx_nbr[from_dir], from_dir);
 				g_score[ext_idx_nbr[from_dir]] = (unsigned short)(cost_nbr[from_dir]);
 				L_i_set_by_idx(open_set_f_score, 0, (unsigned short)(cost_nbr[from_dir] + h_cost_est(ext_idx_nbr[from_dir], ndx_goal))); //### idx STARTS "0", as in array
@@ -1555,13 +1595,13 @@ int get_global_path(T_pose start_in_lawn, T_pose goal_in_lawn, L_i_list pos_list
 	}
 	
 	L_i_delete_all_but_header(closed_set);
-	free(closed_set);
+	rt_free(closed_set);
 	L_i_delete_all_but_header(open_set);
-	free(open_set); 
+	rt_free(open_set); 
 	L_i_delete_all_but_header(open_set_f_score); 
-	free(open_set_f_score);
-	free(came_from);
-	free(g_score);
+	rt_free(open_set_f_score);
+	rt_free(came_from);
+	rt_free(g_score);
 	
 	return -1; //failure
 }
@@ -1616,19 +1656,50 @@ int reconstruct_path(int ndx_curr, unsigned char *field_ptr, int ndx_start, L_i_
 
 
 // get cost of the 4 adjacent grid around current
-int get_neighbor_cost(unsigned short *cost_chart, int ndx_curr, int *ndx_nbr, int *cost_nbr)
+int get_neighbor_cost(unsigned short *cost_chart, int ndx_goal, int ndx_curr, int *ndx_nbr, int *cost_nbr)
 {
 	int sub_x_curr;
 	int sub_y_curr;
 	int i;
 	int value; 
 	
-	ind2sub(g_map.info.width, g_map.info.height, ndx_curr, &sub_x_curr, &sub_y_curr);
-	ndx_nbr[0] = sub2ind(g_map.info.width, g_map.info.height, sub_x_curr-1, sub_y_curr);
-	ndx_nbr[1] = sub2ind(g_map.info.width, g_map.info.height, sub_x_curr+1, sub_y_curr);
-	ndx_nbr[2] = sub2ind(g_map.info.width, g_map.info.height, sub_x_curr, sub_y_curr-1);
-	ndx_nbr[3] = sub2ind(g_map.info.width, g_map.info.height, sub_x_curr, sub_y_curr+1);
+	for(i = 0; i < 4; i++)
+	{
+		ndx_nbr[i] = 0;
+		cost_nbr[i] = MAX_USHORT;
+	}
 	
+	ind2sub(g_map.info.width, g_map.info.height, ndx_curr, &sub_x_curr, &sub_y_curr);
+	if(sub_x_curr-1 >= 0)
+	{
+		ndx_nbr[0] = sub2ind(g_map.info.width, g_map.info.height, sub_x_curr-1, sub_y_curr);
+		value = get_2b_grid_value(g_map.data, ndx_nbr[0]);
+		if((1 != value) || (ndx_goal == ndx_nbr[0])) //not obstacle
+			cost_nbr[0] = cost_chart[ndx_curr] + 1;
+	}
+	if(sub_x_curr+1 <= g_map.info.width-1)
+	{
+		ndx_nbr[1] = sub2ind(g_map.info.width, g_map.info.height, sub_x_curr+1, sub_y_curr);
+		value = get_2b_grid_value(g_map.data, ndx_nbr[1]);
+		if((1 != value) || (ndx_goal == ndx_nbr[1])) //not obstacle
+			cost_nbr[1] = cost_chart[ndx_curr] + 1;
+	}
+	if(sub_y_curr-1 >= 0)
+	{
+		ndx_nbr[2] = sub2ind(g_map.info.width, g_map.info.height, sub_x_curr, sub_y_curr-1);
+		value = get_2b_grid_value(g_map.data, ndx_nbr[2]);
+		if((1 != value) || (ndx_goal == ndx_nbr[2])) //not obstacle
+			cost_nbr[2] = cost_chart[ndx_curr] + 1;
+	}
+	if(sub_y_curr+1 <= g_map.info.height-1)
+	{
+		ndx_nbr[3] = sub2ind(g_map.info.width, g_map.info.height, sub_x_curr, sub_y_curr+1);
+		value = get_2b_grid_value(g_map.data, ndx_nbr[3]);
+		if((1 != value) || (ndx_goal == ndx_nbr[3])) //not obstacle
+			cost_nbr[3] = cost_chart[ndx_curr] + 1;
+	}
+	
+	/*
 	for(i = 0; i < 4; i++)
 	{
 		value = get_2b_grid_value(g_map.data, ndx_nbr[i]);
@@ -1636,7 +1707,7 @@ int get_neighbor_cost(unsigned short *cost_chart, int ndx_curr, int *ndx_nbr, in
 			cost_nbr[i] = MAX_USHORT;
 		else
 			cost_nbr[i] = cost_chart[ndx_curr] + 1;
-	}
+	}*/
 }
 
 

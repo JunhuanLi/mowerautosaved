@@ -323,7 +323,7 @@
             <wLevel>2</wLevel>
             <uThumb>0</uThumb>
             <uSurpInc>0</uSurpInc>
-            <uC99>1</uC99>
+            <uC99>0</uC99>
             <useXO>0</useXO>
             <v6Lang>1</v6Lang>
             <v6LangP>1</v6LangP>
@@ -604,6 +604,21 @@
               <FileName>eul2quatf.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\Algorithm\eul2quatf.c</FilePath>
+            </File>
+            <File>
+              <FileName>conv_enc.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Algorithm\conv_enc.c</FilePath>
+            </File>
+            <File>
+              <FileName>map_server.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Algorithm\map_server.c</FilePath>
+            </File>
+            <File>
+              <FileName>global_planner.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Algorithm\global_planner.c</FilePath>
             </File>
           </Files>
         </Group>

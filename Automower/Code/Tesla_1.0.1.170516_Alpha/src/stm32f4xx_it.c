@@ -211,7 +211,7 @@ Output			: None
 Return			: None
 -------------------------------------------------------------------------------*/
 u8 res_gps;
-const unsigned char GPSDATA_LEN = 92;
+const unsigned char GPSDATA_LEN = 100;
 void USART_GPS_HANDLER(void)
 {
 	

@@ -370,6 +370,7 @@ u8 u5_res = 0;
 u8 UART_RX_BUFFER[200];
 int32_t leftsensor_data = 0;
 int32_t rightsensor_data = 0;
+
 void UART5_IRQHandler(void)
 {
 	u8 i = 0;
@@ -386,16 +387,16 @@ void UART5_IRQHandler(void)
 		UART_RX_BUFFER[12] = u5_res;
 		
 		
-		if((UART_RX_BUFFER[0] == 0xAA)&&(UART_RX_BUFFER[1] == 0xBB)&&(add_temp == UART_RX_BUFFER[12]))
+		if((UART_RX_BUFFER[0] == 0xAA) && (UART_RX_BUFFER[1] == 0xBB) && (add_temp == UART_RX_BUFFER[12]))
 		{
 			leftsensor_data = (UART_RX_BUFFER[9] << 8) + UART_RX_BUFFER[8];
 			rightsensor_data = (UART_RX_BUFFER[11] << 8) + UART_RX_BUFFER[10];
 		
-			if(UART_RX_BUFFER[4] == 0x02)
+			if(UART_RX_BUFFER[4] == 0x01)//V00 is 0x02, V01 is 0x01
 			{
 				leftsensor_data = -leftsensor_data;
 			}
-			if(UART_RX_BUFFER[5] == 0x02)
+			if(UART_RX_BUFFER[5] == 0x01)
 			{
 				rightsensor_data = -rightsensor_data;
 			}

@@ -85,7 +85,7 @@ void rt_init_thread_entry(void* parameter)
 
 
 /***END***/
-	#ifdef CUSTOMER_SERIAL_DEBUG
+	#if 0//def CUSTOMER_SERIAL_DEBUG
 	rt_kprintf("\r\n>>>>system peripheral device initialization END ........  \r\n ");
 
     #endif
@@ -181,7 +181,7 @@ int rt_application_init()
                    &thread_gps_stack[0],
                    sizeof(thread_gps_stack),
                    PERIORI_GPS,
-                   10);
+                   50);// pre is 10
 	if(init_thread_state==RT_EOK)
 	{
     	rt_thread_startup(&thread_gps);

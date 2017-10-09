@@ -333,6 +333,7 @@ int stm32_hw_usart_init(void)
 {
     struct stm32_uart *uart;
     struct serial_configure config = RT_SERIAL_CONFIG_DEFAULT;
+    struct serial_configure config1 = RT_SERIAL_CONFIG_USER1;
 
     RCC_Configuration();
     GPIO_Configuration();
@@ -341,7 +342,7 @@ int stm32_hw_usart_init(void)
     uart = &uart1;
 
     serial1.ops    = &stm32_uart_ops;
-    serial1.config = config;
+    serial1.config = config1;
 
     NVIC_Configuration(&uart1);
 

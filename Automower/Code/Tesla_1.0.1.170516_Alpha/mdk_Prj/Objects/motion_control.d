@@ -46,6 +46,14 @@
 .\objects\motion_control.o: ..\Algorithm\include\pi.h
 .\objects\motion_control.o: ..\Algorithm\include\motion_math.h
 .\objects\motion_control.o: ..\Algorithm\include\motion_types.h
+.\objects\motion_control.o: ..\Algorithm\include\global_planner.h
+.\objects\motion_control.o: ..\Algorithm\include\map_server.h
+.\objects\motion_control.o: ..\OS\include\rtthread.h
+.\objects\motion_control.o: ..\OS\include\rtdebug.h
+.\objects\motion_control.o: ..\OS\include\rtservice.h
+.\objects\motion_control.o: ..\OS\include\rtm.h
+.\objects\motion_control.o: ..\OS\include\rtthread.h
+.\objects\motion_control.o: ..\include\global.h
 .\objects\motion_control.o: ..\Algorithm\include\motion_sense.h
 .\objects\motion_control.o: ..\Algorithm\include\motion_mag_line.h
 .\objects\motion_control.o: ..\Algorithm\include\motor_control.h

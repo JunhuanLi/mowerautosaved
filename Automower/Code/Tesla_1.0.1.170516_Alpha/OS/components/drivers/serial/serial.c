@@ -77,9 +77,7 @@ rt_inline int _serial_poll_tx(struct rt_serial_device *serial, const rt_uint8_t 
         {
             serial->ops->putc(serial, '\r');
         }
-    
         serial->ops->putc(serial, *data);
-    
         ++ data;
         -- length;
     }

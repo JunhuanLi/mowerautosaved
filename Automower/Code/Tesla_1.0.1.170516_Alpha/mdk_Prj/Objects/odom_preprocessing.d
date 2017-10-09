@@ -72,3 +72,4 @@
 .\objects\odom_preprocessing.o: ..\Driver\include\usart.h
 .\objects\odom_preprocessing.o: ..\include\board.h
 .\objects\odom_preprocessing.o: ..\include\global.h
+.\objects\odom_preprocessing.o: ..\Algorithm\include\movvarf.h

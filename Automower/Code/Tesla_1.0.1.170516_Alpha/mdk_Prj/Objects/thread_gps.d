@@ -72,6 +72,11 @@
 .\objects\thread_gps.o: ..\Driver\include\usart.h
 .\objects\thread_gps.o: ..\include\board.h
 .\objects\thread_gps.o: ..\include\global.h
+.\objects\thread_gps.o: ..\Algorithm\include\movvarf.h
 .\objects\thread_gps.o: ..\Application\include\debug.h
 .\objects\thread_gps.o: ..\Driver\include\lcd12864_io_spi.h
 .\objects\thread_gps.o: ..\Application\include\mower_common.h
+.\objects\thread_gps.o: ..\Algorithm\include\conv_enc.h
+.\objects\thread_gps.o: ..\Algorithm\include\imu.h
+.\objects\thread_gps.o: ..\Algorithm\include\normK.h
+.\objects\thread_gps.o: ..\Algorithm\include\imu_processing.h

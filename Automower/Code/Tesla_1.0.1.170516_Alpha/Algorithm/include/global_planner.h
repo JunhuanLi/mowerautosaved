@@ -26,14 +26,14 @@
 #define HEADING_ANGLE_TOL 1.3963 			//1.3963arc = 80degree, 0.1745arc = 10degree
 #define CELL_WCHG_UPPER_BOUND 1
 #define DEAD_END_CLEARENCE 0.35
-#define CHRGST_DOMAIN_RADIUS 0.3
+#define CHRGST_DOMAIN_RADIUS 2 			//pre-value:0.3
 #define CIRCLING_LAPS 1								//set to 2 will be some problem I guess
 #define SHUTTLE_LENGTH 2							//
 #define QUADRANT_DEAD_ZONE 0.1745 		//0.2618 = 15 degree, 0.1745 = 10 degree
 #define CP_SPACING_TOL 0.7071					//0.25*2*sqrt(2)
 #define CP_ON_SWPLN_TOL 0.25 					//the tolerance of critical points on the same sweepline
 #define CP_ANXD_ZONE_EST_AHEAD 0.5 		//the estimation ahead of critical points annexed zone
-#define CELL_ENTRY_SAFE_CL 0.5				//cell entry safe clearance
+#define CELL_ENTRY_SAFE_CL 0.25				//cell entry safe clearance
 
 /* Structs Declaration */
 // Enumerators
@@ -125,6 +125,7 @@ extern int g_flg_mapping;						//FLAG: on mapping or not
 extern int g_flg_mapping_source;		//FLAG: 0-wire, 1-rigid
 extern int g_flg_sens_stp_unoccur;	//FLAG: first sensing stop(wire or rigid) //NOTICE: need to reset when bstr dir changed!
 extern int g_flg_endline_ever_touched; //FLAG: endline ever touched
+extern int g_flg_outer_bdry_mapping; 	//FLAG: outer boundary mapping
 
 //transient data
 extern T_pose g_orig_pose_in_lawn;	//the charge station pose in lawn(0,0,0)
@@ -175,7 +176,7 @@ int make_decision(T_trigger *trigger, T_action *action_out, T_params_act *params
 
 int get_global_path(T_pose start_in_lawn, T_pose goal_in_lawn, L_i_list pos_list_out, L_i_list dir_list_out);
 int reconstruct_path(int ndx_curr, unsigned char *field_ptr, int ndx_start, L_i_list path_list_out, L_i_list dir_list_out);
-int get_neighbor_cost(unsigned short *cost_chart, int ndx_curr, int *ndx_nbr, int *cost_nbr);
+int get_neighbor_cost(unsigned short *cost_chart, int ndx_goal, int ndx_curr, int *ndx_nbr, int *cost_nbr);
 
 T_side compute_turn_side();
 float compute_heading_dir(int heading_type);

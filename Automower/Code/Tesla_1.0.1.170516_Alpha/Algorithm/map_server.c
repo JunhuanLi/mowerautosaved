@@ -23,13 +23,6 @@ T_occ_grid g_map;
 T_pose_m g_current_pose_on_map; 
 T_point_m g_tr_map_in_lawngrid; 
 
-int g_map_color_negate = 0; 
-float g_map_occ_thh = 0.65; 
-float g_map_free_thh = 0.196; 
-float g_map_resol = 0.25; 
-float g_max_lawn_width = 30; 
-float g_max_lawn_height = 30; 
-
 PL_i_list g_graph; 
 int g_adj_vexnum = 0; 
 unsigned char g_vertices_marked[MAX_CELL_NUM];
@@ -49,11 +42,15 @@ int g_total_bdrys_cnt = 0;
 int map_init()
 {
 	//char *mapname = "robotic_mower_map";
-	g_map.info.resolution = g_map_resol;
-	g_map.info.width = (int)(g_max_lawn_width*1.5*2 / g_map_resol);	//1.5 as about sqrt(2)
-	g_map.info.height = (int)(g_max_lawn_height*1.5*2 / g_map_resol);
+	g_map.info.resolution = MAP_RESOL;
+	//g_map.info.width = (int)round(MAX_LAWN_WIDTH*1.5*2 / MAP_RESOL);	//1.5 as about sqrt(2)
+	//g_map.info.height = (int)round(MAX_LAWN_HEIGHT*1.5*2 / MAP_RESOL);
+	g_map.info.width = (int)(MAX_LAWN_WIDTH*1.5*2 / MAP_RESOL);	//1.5 as about sqrt(2)
+	g_map.info.height = (int)(MAX_LAWN_HEIGHT*1.5*2 / MAP_RESOL);
 		
 	//charge station(the origin of the 'LAWN GRID' coordinate) in the 'MAP' coordinate. 
+	//g_map.info.charge_st.pos.x = (int)round(g_map.info.width/2); 
+	//g_map.info.charge_st.pos.y = (int)round(g_map.info.height/2); 
 	g_map.info.charge_st.pos.x = (int)(g_map.info.width/2); 
 	g_map.info.charge_st.pos.y = (int)(g_map.info.height/2); 
 	g_map.info.charge_st.th = 0.0; 
@@ -63,8 +60,10 @@ int map_init()
 	g_tr_map_in_lawngrid.y = -g_map.info.charge_st.pos.y;
 		
 	//allocate map space and set to zeros for initialization
-	g_map.data = calloc(g_map.info.width * g_map.info.height, (size_t)OCC_BITS); 
-	set_all_2b_grids(g_map.data, 0); 
+	//g_map.data = rt_calloc(g_map.info.width * g_map.info.height, (rt_size_t)OCC_BITS); 
+	//g_map.data = rt_calloc(g_map.info.width * g_map.info.height / (BYTE_BITS/OCC_BITS), sizeof(char)); 
+	g_map.data = rt_malloc(g_map.info.width * g_map.info.height / (BYTE_BITS/OCC_BITS)); 
+	set_all_2b_grids(g_map.data, g_map.info.width*g_map.info.height, 0); 
 	
 	return 0;
 }
@@ -136,28 +135,28 @@ int ind2sub(int width, int height, int ndx, int *sub_x_out, int *sub_y_out)
 
 
 // Set all grids equal to 'value'(2 bits for each state grids)
-int set_all_2b_grids(unsigned char *grids, int value)
+int set_all_2b_grids(unsigned char *grids, int grids_num, int value_byte)
 {	
 	int ndx;
 	int map_length_of_bytes; 
 	
-	map_length_of_bytes = g_map.info.width*g_map.info.height / (BYTE_BITS/OCC_BITS); //DIR_BITS = OCC_BITS = 2
+	map_length_of_bytes = grids_num / (BYTE_BITS/OCC_BITS); //DIR_BITS = OCC_BITS = 2
 	for(ndx = 0; ndx < map_length_of_bytes; ndx++)
-		grids[ndx] = (unsigned char)value; 
+		grids[ndx] = (unsigned char)value_byte; 
 	
 	return 0;
 }
 
 
 // set all grids equal to 'value'(16 bits for each state grids)
-int set_all_16b_grids(unsigned short *grids, int value)
+int set_all_16b_grids(unsigned short *grids, int grids_num, int value_2bytes)
 {
 	int ndx;
 	int map_length_of_2bytes; 
 	
-	map_length_of_2bytes = g_map.info.width * g_map.info.height;
+	map_length_of_2bytes = grids_num;
 	for(ndx = 0; ndx < map_length_of_2bytes; ndx++)
-		grids[ndx] = (unsigned short)value; 
+		grids[ndx] = (unsigned short)value_2bytes; 
 	
 	return 0;
 }
@@ -200,6 +199,13 @@ int set_bits(char *x_ptr, int p, int n, int state)
 int get_bits(char x, int p, int n)
 {
 	return (x >> (p+1-n)) & ~(~0 << n);
+}
+
+
+// Abstract
+int ms_abs(int x)
+{
+	return x < 0? -x : x;
 }
 
 
@@ -275,24 +281,26 @@ int map_clip()
 	//compute width and height of the new map
 	temp_width = limit_right - limit_left + 1;
 	temp_height = limit_up - limit_down + 1;
-	temp_data = calloc(temp_width * temp_height, (size_t)OCC_BITS); 
+	temp_data = rt_calloc(temp_width * temp_height / (BYTE_BITS/OCC_BITS), sizeof(char)); 
 	
 	//dump the primary data to temp_data
-	for(y = temp_height-1; y >= 0; y++)
+	for(y = temp_height-1; y >= 0; y--)
 	{
 		for(x = 0; x < temp_width; x+=4)
 		{
 			int temp_ndx = sub2ind(temp_width, temp_height, x, y);
-			int pri_ndx = sub2ind(g_map.info.width, g_map.info.height, x+limit_left, y+limit_down);
+			int pri_ndx = sub2ind(g_map.info.width, g_map.info.height, x + limit_left, y + limit_down);
 			temp_data[temp_ndx/(BYTE_BITS/OCC_BITS)] = g_map.data[pri_ndx/(BYTE_BITS/OCC_BITS)];
 		}
 	}
 	
-	free(g_map.data);  //free the space allocated to initial huge map.
+	rt_free(g_map.data);  //free the space allocated to initial huge map.
 	g_map.data = temp_data;
 	
 	g_map.info.charge_st.pos.x -= limit_left;
 	g_map.info.charge_st.pos.y -= limit_down;
+	g_map.info.width = temp_width;
+	g_map.info.height = temp_height;
 	
 	g_tr_map_in_lawngrid.x = -g_map.info.charge_st.pos.x;
 	g_tr_map_in_lawngrid.y = -g_map.info.charge_st.pos.y;
@@ -320,7 +328,7 @@ int h_cost_est(int ndx_a, int ndx_b)
 	
 	ind2sub(g_map.info.width, g_map.info.height, ndx_a, &sub_x_a, &sub_y_a);
 	ind2sub(g_map.info.width, g_map.info.height, ndx_b, &sub_x_b, &sub_y_b);
-	mht_dist = abs(sub_x_b - sub_x_a) + abs(sub_y_b - sub_y_a);
+	mht_dist = ms_abs(sub_x_b - sub_x_a) + ms_abs(sub_y_b - sub_y_a);
 	
 	return mht_dist;
 }
@@ -371,7 +379,7 @@ void boundary_filter()
 	
 	//02.wire boundary: 
 	//compute the mean point of each boundary	
-	mean_pts = calloc(g_wire_srndd_landscape_cnt, sizeof(T_point));	
+	mean_pts = rt_calloc(g_wire_srndd_landscape_cnt, sizeof(T_point));	
 	L_i_init(&distinct_wire_bdry_idxs);
 	for(i = 0; i < g_wire_srndd_landscape_cnt; i++)
 	{
@@ -405,14 +413,14 @@ void boundary_filter()
 			if(i < (int)L_i_retrieve(distinct_wire_bdry_idxs, i))
 			{
 				g_wire_srndd_landscape_bdrys[i].next = g_wire_srndd_landscape_bdrys[(int)L_i_retrieve(distinct_wire_bdry_idxs, i)].next;
-				g_wire_srndd_landscape_bdrys[(int)L_i_retrieve(distinct_wire_bdry_idxs, i)].next = NULL;
+				g_wire_srndd_landscape_bdrys[(int)L_i_retrieve(distinct_wire_bdry_idxs, i)].next = RT_NULL;
 			}
 		}
 	}
 	
-	free(mean_pts);
+	rt_free(mean_pts);
 	L_i_delete_all_but_header(distinct_wire_bdry_idxs);
-	free(distinct_wire_bdry_idxs);
+	rt_free(distinct_wire_bdry_idxs);
 	
 	//smooth each wire landscape boundary
 	for(i = 0; i < g_wire_srndd_landscape_cnt; i++)
@@ -444,7 +452,7 @@ T_point compute_mean_point(L_p_list wire_bdry)
 	
 	pt.x = 0.0;
 	pt.y = 0.0;
-	while(cursor != NULL)
+	while(cursor != RT_NULL)
 	{
 		++length;
 		pt.x += cursor->element.pos.x; 
@@ -515,7 +523,7 @@ void moving_avg(L_p_list list, int window_len)
 		L_p_set_by_idx(list, i, L_p_retrieve(tmp_list, i));
 	
 	L_p_delete_all_but_header(tmp_list);
-	free(tmp_list);
+	rt_free(tmp_list);
 	
 	return;
 }
@@ -574,7 +582,7 @@ int load_map(char *mapname)
 	}
 	
 	//allocate space in the map
-	map->data = calloc(map->info.width * map->info.height, sizeof(map->data[0]));
+	map->data = rt_calloc(map->info.width * map->info.height, sizeof(map->data[0]));
 	
 	//read the image in
 	for(unsigned int y=0; y < map->info.height; y++) 
@@ -673,13 +681,13 @@ int save_map(char *mapname)
 // Initialize(with head node)
 void L_i_init(L_i_list *list_ptr)
 {
-	*list_ptr = (L_i_list)malloc(sizeof(L_i_node));
-	if(*list_ptr == NULL)
+	*list_ptr = (L_i_list)rt_malloc(sizeof(L_i_node));
+	if(*list_ptr == RT_NULL)
 		rt_kprintf("malloc fails, slist initializing fails");
 	else
 	{
-		memset(*list_ptr, 0, sizeof(L_i_node));
-		(*list_ptr)->next = NULL;
+		rt_memset(*list_ptr, 0, sizeof(L_i_node));
+		(*list_ptr)->next = RT_NULL;
 		rt_kprintf("malloc finished, slist initializing finished");
 	}
 }
@@ -687,7 +695,7 @@ void L_i_init(L_i_list *list_ptr)
 // Return 1(true) if 'list' is empty
 int L_i_is_empty(L_i_list list)
 {
-	return list->next == NULL;
+	return list->next == RT_NULL;
 }
 
 // Return true if 'elem' is a member of 'list'
@@ -695,7 +703,7 @@ int L_i_is_member(L_i_list list, unsigned short elem)
 {
 	L_i_cursor cursor = list->next;
 	
-	while(cursor != NULL)
+	while(cursor != RT_NULL)
 	{
 		if(elem == cursor->element)
 			return 1;
@@ -709,14 +717,14 @@ void L_i_prepend(L_i_list list, unsigned short elem)
 {
 	L_i_cursor insert_ptr;
 	
-	insert_ptr = (L_i_cursor)malloc(sizeof(L_i_node));
-	if(insert_ptr == NULL)
+	insert_ptr = (L_i_cursor)rt_malloc(sizeof(L_i_node));
+	if(insert_ptr == RT_NULL)
 		rt_kprintf("malloc fails, slist initializing fails");
 	else
 	{
-		memset(insert_ptr, 0, sizeof(L_i_node));
+		rt_memset(insert_ptr, 0, sizeof(L_i_node));
 		insert_ptr->element = elem;
-		insert_ptr->next = NULL;
+		insert_ptr->next = RT_NULL;
 	}
 	
 	insert_ptr->next = list->next;
@@ -729,18 +737,18 @@ void L_i_append(L_i_list list, unsigned short elem)
 	L_i_cursor cursor;
 	L_i_cursor insert_ptr;
 	
-	insert_ptr = (L_i_cursor)malloc(sizeof(L_i_node));
-	if(insert_ptr == NULL)
+	insert_ptr = (L_i_cursor)rt_malloc(sizeof(L_i_node));
+	if(insert_ptr == RT_NULL)
 		rt_kprintf("malloc fails, slist initializing fails");
 	else
 	{
-		memset(insert_ptr, 0, sizeof(L_i_node));
+		rt_memset(insert_ptr, 0, sizeof(L_i_node));
 		insert_ptr->element = elem;
-		insert_ptr->next = NULL;
+		insert_ptr->next = RT_NULL;
 	}
 	
 	cursor = list;
-	while(cursor->next != NULL)   //a trick here, cannot be "cursor != NULL"
+	while(cursor->next != RT_NULL)   //a trick here, cannot be "cursor != NULL"
 		cursor = cursor->next;
 	
 	cursor->next = insert_ptr;
@@ -761,7 +769,7 @@ unsigned short L_i_retrieve(L_i_list list, int idx)
 	while(idx >= length)
 		idx -= length;
 	
-	while(cursor != NULL)
+	while(cursor != RT_NULL)
 	{
 		if(n++ == idx)
 			return cursor->element;
@@ -777,7 +785,7 @@ int L_i_set_by_idx(L_i_list list, int idx, unsigned short elem)
 	int n = 0;
 	L_i_cursor cursor = list->next;
 	
-	while(cursor != NULL)
+	while(cursor != RT_NULL)
 	{
 		if(n++ == idx) 
 		{
@@ -797,7 +805,7 @@ int L_i_get_idx_of_min(L_i_list list)
 	int n = 0;
 	L_i_cursor cursor = list->next;
 	
-	while(cursor != NULL)
+	while(cursor != RT_NULL)
 	{
 		if((n == 0) || (cursor->element < min))
 		{
@@ -817,7 +825,7 @@ int L_i_get_length(L_i_list list)
 	int length = 0;
 	L_i_cursor cursor = list->next;
 	
-	while(cursor != NULL)
+	while(cursor != RT_NULL)
 	{
 		++length;
 		cursor = cursor->next;
@@ -833,18 +841,18 @@ void L_i_insert_by_idx(L_i_list list, int idx, unsigned short elem)
 	L_i_cursor cursor;
 	L_i_cursor insert_ptr;
 	
-	insert_ptr = (L_i_cursor)malloc(sizeof(L_i_node));
-	if(insert_ptr == NULL)
+	insert_ptr = (L_i_cursor)rt_malloc(sizeof(L_i_node));
+	if(insert_ptr == RT_NULL)
 		rt_kprintf("malloc fails, slist initializing fails");
 	else
 	{
-		memset(insert_ptr, 0, sizeof(L_i_node));
+		rt_memset(insert_ptr, 0, sizeof(L_i_node));
 		insert_ptr->element = elem;
-		insert_ptr->next = NULL;
+		insert_ptr->next = RT_NULL;
 	}
 	
 	cursor = list;
-	while(cursor->next != NULL)
+	while(cursor->next != RT_NULL)
 	{
 		if(n++ == idx)
 		{
@@ -868,12 +876,12 @@ void L_i_delete_by_idx(L_i_list list, int idx)
 	L_i_cursor pre_cursor = list;
 	L_i_cursor cursor = list->next;
 	
-	while(cursor != NULL)
+	while(cursor != RT_NULL)
 	{
 		if(n++ == idx)
 		{
 			pre_cursor->next = cursor->next;
-			free(cursor);
+			rt_free(cursor);
 			cursor = pre_cursor->next;
 			return;
 		}
@@ -891,10 +899,10 @@ void L_i_delete_all_but_header(L_i_list list)
 {
 	L_i_cursor cursor = list->next;
 	
-	while(cursor != NULL)
+	while(cursor != RT_NULL)
 	{
 		list->next = cursor->next;
-		free(cursor);
+		rt_free(cursor);
 		cursor = list->next;
 	}
 	
@@ -908,7 +916,7 @@ void L_i_delete_all_but_header(L_i_list list)
 {
 	int i;
 	
-	graph_ptr->vertices = calloc(MAX_CELL_NUM, sizeof(L_i_node));
+	graph_ptr->vertices = rt_calloc(MAX_CELL_NUM, sizeof(L_i_node));
 	if(graph_ptr->vertices == NULL)
 		rt_kprintf("calloc fails, graph initializing fails!");
 	else
@@ -931,15 +939,15 @@ void PL_i_init(PL_i_list *PL_list_ptr, int nitems)
 {
 	int i;
 	
-	*PL_list_ptr = calloc(nitems, sizeof(L_i_node));
-	if(*PL_list_ptr == NULL)
+	*PL_list_ptr = rt_calloc(nitems, sizeof(L_i_node));
+	if(*PL_list_ptr == RT_NULL)
 		rt_kprintf("calloc fails, PL_list initializing fails!");
 	else
 	{
 		for(i = 0; i < nitems; i++)
 		{
 			(*PL_list_ptr)[i].element = (unsigned short)0;
-			(*PL_list_ptr)[i].next = NULL; 
+			(*PL_list_ptr)[i].next = RT_NULL; 
 			rt_kprintf("calloc finished, p_list initializing finished!");
 		}
 	}
@@ -985,17 +993,39 @@ void PL_i_insert(PL_i_list graph, int p_node, int c_node)
 }
 
 
+// Print the graph out
+void PL_i_print(PL_i_list graph, int nodes_num)
+{
+	int i;
+	int j;
+	int length;
+	
+	rt_kprintf("\n");
+	rt_kprintf("The adjacency graph nodes are as below: \n");
+	for(i = 0; i < nodes_num; i++)
+	{
+		rt_kprintf("node %d : ", (int)(graph[i].element));
+		length = L_i_get_length(graph + i);
+		for(j = 0; j < length; j++)
+			rt_kprintf("- %d ", (int)L_i_retrieve(graph + i, j));
+		rt_kprintf("\n");
+	}
+	
+	return;
+}
+
+
 /* Linked List(point node) Definition */
 // Initialize(with head node)
 void L_p_init(L_p_list *list_ptr)
 {
-	*list_ptr = (L_p_list)malloc(sizeof(L_p_node));
-	if(*list_ptr == NULL)
+	*list_ptr = (L_p_list)rt_malloc(sizeof(L_p_node));
+	if(*list_ptr == RT_NULL)
 		rt_kprintf("malloc fails, slist initializing fails");
 	else
 	{
-		memset(*list_ptr, 0, sizeof(L_p_node)); //a struct in element, can also be fill zeros like this?
-		(*list_ptr)->next = NULL;
+		rt_memset(*list_ptr, 0, sizeof(L_p_node)); //a struct in element, can also be fill zeros like this?
+		(*list_ptr)->next = RT_NULL;
 		rt_kprintf("malloc finished, slist initializing finished");
 	}
 }
@@ -1003,7 +1033,7 @@ void L_p_init(L_p_list *list_ptr)
 // Return 1(true) if 'list' is empty
 int L_p_is_empty(L_p_list list)
 {
-	return list->next == NULL;
+	return list->next == RT_NULL;
 }
 
 // Insert after the head of list
@@ -1011,14 +1041,14 @@ void L_p_prepend(L_p_list list, T_pose elem)
 {
 	L_p_cursor insert_ptr;
 	
-	insert_ptr = (L_p_cursor)malloc(sizeof(L_p_node));
-	if(insert_ptr == NULL)
+	insert_ptr = (L_p_cursor)rt_malloc(sizeof(L_p_node));
+	if(insert_ptr == RT_NULL)
 		rt_kprintf("malloc fails, slist initializing fails");
 	else
 	{
-		memset(insert_ptr, 0, sizeof(L_p_node));
+		rt_memset(insert_ptr, 0, sizeof(L_p_node));
 		insert_ptr->element = elem;
-		insert_ptr->next = NULL;
+		insert_ptr->next = RT_NULL;
 	}
 	
 	insert_ptr->next = list->next;
@@ -1031,18 +1061,18 @@ void L_p_append(L_p_list list, T_pose elem)
 	L_p_cursor cursor;
 	L_p_cursor insert_ptr;
 	
-	insert_ptr = (L_p_cursor)malloc(sizeof(L_p_node));
-	if(insert_ptr == NULL)
+	insert_ptr = (L_p_cursor)rt_malloc(sizeof(L_p_node));
+	if(insert_ptr == RT_NULL)
 		rt_kprintf("malloc fails, slist initializing fails");
 	else
 	{
-		memset(insert_ptr, 0, sizeof(L_p_node));
+		rt_memset(insert_ptr, 0, sizeof(L_p_node));
 		insert_ptr->element = elem;
-		insert_ptr->next = NULL;
+		insert_ptr->next = RT_NULL;
 	}
 	
 	cursor = list;
-	while(cursor->next != NULL)   //a trick here, cannot be "cursor != NULL"
+	while(cursor->next != RT_NULL)   //a trick here, cannot be "cursor != NULL"
 		cursor = cursor->next;
 	
 	cursor->next = insert_ptr;
@@ -1064,7 +1094,7 @@ T_pose L_p_retrieve(L_p_list list, int idx)
 	while(idx >= length)
 		idx -= length; 
 	
-	while(cursor != NULL)
+	while(cursor != RT_NULL)
 	{
 		if(n++ == idx)
 			return cursor->element;
@@ -1084,7 +1114,7 @@ int L_p_set_by_idx(L_p_list list, int idx, T_pose elem)
 	int n = 0;
 	L_p_cursor cursor = list->next;
 	
-	while(cursor != NULL)
+	while(cursor != RT_NULL)
 	{
 		if(n++ == idx) 
 		{
@@ -1102,7 +1132,7 @@ int L_p_get_length(L_p_list list)
 	int length = 0;
 	L_p_cursor cursor = list->next;
 	
-	while(cursor != NULL)
+	while(cursor != RT_NULL)
 	{
 		++length;
 		cursor = cursor->next;
@@ -1118,12 +1148,12 @@ void L_p_delete_by_idx(L_p_list list, int idx)
 	L_p_cursor pre_cursor = list;
 	L_p_cursor cursor = list->next;
 	
-	while(cursor != NULL)
+	while(cursor != RT_NULL)
 	{
 		if(n++ == idx)
 		{
 			pre_cursor->next = cursor->next;
-			free(cursor);
+			rt_free(cursor);
 			cursor = pre_cursor->next;
 			return;
 		}
@@ -1141,10 +1171,10 @@ void L_p_delete_all_but_header(L_p_list list)
 {
 	L_p_cursor cursor = list->next;
 	
-	while(cursor != NULL)
+	while(cursor != RT_NULL)
 	{
 		list->next = cursor->next;
-		free(cursor);
+		rt_free(cursor);
 		cursor = list->next;
 	}
 	
@@ -1162,15 +1192,15 @@ void PL_p_init(PL_p_list *PL_list_ptr, int nitems)
 	pose0.pos.x = 0.0;
 	pose0.pos.y = 0.0;
 	pose0.th = 0.0;
-	*PL_list_ptr = calloc(nitems, sizeof(L_p_node));
-	if(*PL_list_ptr == NULL)
+	*PL_list_ptr = rt_calloc(nitems, sizeof(L_p_node));
+	if(*PL_list_ptr == RT_NULL)
 		rt_kprintf("calloc fails, PL_list initializing fails!");
 	else
 	{
 		for(i = 0; i < nitems; i++)
 		{
 			(*PL_list_ptr)[i].element = pose0;
-			(*PL_list_ptr)[i].next = NULL; 
+			(*PL_list_ptr)[i].next = RT_NULL; 
 			rt_kprintf("calloc finished, p_list initializing finished!");
 		}
 	}

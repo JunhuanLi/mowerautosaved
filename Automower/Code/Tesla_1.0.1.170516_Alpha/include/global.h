@@ -28,7 +28,7 @@ extern float acc_bias_g[3];
 extern float gyro_bias_20602[3];
 extern float acc_bias_g_20602[3]; 
 extern float g_timediff_s_imu;
-extern float g_timediff_s_gps;
+//extern float g_timediff_s_gps;
 extern float eul_rad[3];
 extern float rot_vec[3];
 extern local_time ltime;
